@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evreka Digital Twin — Stop Guessing, Start Simulating</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F8F7F4;--bg2:#F0EFE9;--white:#FFFFFF;--navy:#0D2137;--navy2:#162C42;
+  --blue:#1A5276;--green:#16A34A;--green-d:#0F7A36;--green-lt:#DCFCE7;
+  --amber:#B45309;--amber-lt:#FEF3C7;--red:#DC2626;--red-lt:#FEE2E2;
+  --text:#0D2137;--muted:#5A7A96;--border:#D8D5CC;--border2:#E8E6E0;
+  --mono:'DM Mono',monospace;--sans:'Instrument Sans',sans-serif;
+  --display:'Big Shoulders Display',sans-serif;
+  --serif:'Instrument Serif',Georgia,serif;--radius:8px;--radius-lg:16px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;border:none;background:none;font-family:inherit}
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+
+/* ── Nav ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(248,247,244,.93);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border2);
+  padding:0 32px;height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-brand{display:flex;align-items:center;gap:10px;cursor:pointer}
+.nav-brand-name{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--navy)}
+.nav-links{display:flex;align-items:center;gap:4px}
+.nav-link{font-size:13px;font-weight:500;color:var(--muted);padding:6px 11px;border-radius:6px;transition:all .15s;cursor:pointer}
+.nav-link:hover,.nav-link.active{color:var(--navy);background:var(--bg2)}
+.nav-cta{background:var(--navy);color:#fff;border-radius:6px;padding:8px 18px;font-size:13px;font-weight:600;transition:background .15s}
+.nav-cta:hover{background:var(--navy2)}
+
+/* ── Utility ── */
+.container{max-width:1160px;margin:0 auto;padding:0 32px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:'';width:20px;height:1px;background:var(--muted)}
+.section{padding:96px 0}
+.divider{height:1px;background:var(--border2)}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;border-radius:var(--radius);padding:13px 26px;font-family:var(--display);font-size:17px;font-weight:700;transition:all .15s}
+.btn-primary:hover{background:var(--navy2);transform:translateY(-1px)}
+.btn-green{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border-radius:var(--radius);padding:13px 26px;font-family:var(--display);font-size:17px;font-weight:700;transition:all .15s}
+.btn-green:hover{background:var(--green-d);transform:translateY(-1px)}
+.btn-outline{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--border);color:var(--navy);border-radius:var(--radius);padding:12px 24px;font-family:var(--display);font-size:17px;font-weight:700;transition:all .15s;background:transparent}
+.btn-outline:hover{border-color:var(--navy);background:var(--bg2)}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── Hero ── */
+.hero{padding:140px 0 80px;position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}}
+.hero-kicker{display:inline-flex;align-items:center;gap:8px;background:var(--green-lt);border:1px solid #BBF7D0;border-radius:20px;padding:5px 14px;font-family:var(--serif);font-size:14px;font-style:italic;letter-spacing:.01em;color:var(--green-d);margin-bottom:24px}
+.hero-kicker::before{content:'●';font-size:8px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+h1.hero-title{font-family:var(--display);font-size:clamp(48px,6vw,80px);font-weight:900;line-height:1.05;color:var(--navy);margin-bottom:28px;letter-spacing:-.01em}
+h1.hero-title em{color:var(--green);font-style:normal}
+.hero-sub{font-size:17px;color:var(--muted);line-height:1.65;max-width:480px;margin-bottom:40px}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.hero-proof{margin-top:48px;display:flex;align-items:center;gap:20px;padding-top:32px;border-top:1px solid var(--border2)}
+.proof-stat{text-align:center}
+.proof-num{font-family:var(--display);font-size:36px;font-weight:800;color:var(--green);line-height:1}
+.proof-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-top:4px}
+.proof-divider{width:1px;height:40px;background:var(--border2)}
+
+/* ── Route canvas ── */
+.route-canvas-wrap{background:var(--navy);border-radius:var(--radius-lg);padding:24px;position:relative;overflow:hidden;box-shadow:0 32px 80px rgba(13,33,55,.18)}
+.route-canvas-wrap::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 35px,rgba(255,255,255,.025) 35px,rgba(255,255,255,.025) 36px),repeating-linear-gradient(90deg,transparent,transparent 35px,rgba(255,255,255,.025) 35px,rgba(255,255,255,.025) 36px)}
+.route-canvas-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;position:relative;z-index:1}
+.rch-left{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.rch-badge{display:flex;align-items:center;gap:6px;background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);border-radius:20px;padding:4px 12px;font-family:var(--mono);font-size:10px;color:rgba(22,163,74,.9)}
+.rch-badge::before{content:'●';font-size:8px;animation:pulse 1.5s infinite}
+.canvas-metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px;position:relative;z-index:1}
+.cm-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:12px 14px}
+.cm-label{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px}
+.cm-val{font-family:var(--display);font-size:22px;font-weight:700;color:#fff;line-height:1}
+.cm-delta{font-family:var(--mono);font-size:10px;margin-top:3px}
+.sim-toggle{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;position:relative;z-index:1}
+.sim-btn{padding:7px 16px;border-radius:6px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;transition:all .2s;cursor:pointer;border:none}
+.sim-btn.chaos{background:rgba(26,82,118,.4);color:rgba(255,255,255,.6)}
+.sim-btn.chaos.active{background:#1A5276;color:#fff}
+.sim-btn.opt{background:rgba(22,163,74,.2);color:rgba(22,163,74,.7)}
+.sim-btn.opt.active{background:var(--green);color:#fff}
+
+/* ── HIW ── */
+.hiw-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border2);border-radius:var(--radius-lg);overflow:hidden;margin-top:48px}
+@media(max-width:700px){.hiw-grid{grid-template-columns:1fr}}
+.hiw-item{background:var(--white);padding:40px 36px;position:relative}
+.hiw-num{font-family:var(--display);font-size:72px;font-weight:900;color:var(--border2);line-height:1;position:absolute;top:20px;right:24px}
+.hiw-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--bg2);margin-bottom:20px;font-size:22px}
+.hiw-title{font-family:var(--display);font-size:22px;font-weight:800;color:var(--navy);margin-bottom:10px}
+.hiw-desc{font-size:14px;color:var(--muted);line-height:1.6}
+
+/* ── Ticker ── */
+.ticker-section{background:var(--navy);padding:20px 0;overflow:hidden}
+.ticker-track{display:flex;gap:0;animation:ticker 30s linear infinite;white-space:nowrap}
+.ticker-item{font-family:var(--display);font-size:16px;font-weight:700;color:rgba(255,255,255,.25);padding:0 40px;flex-shrink:0;display:flex;align-items:center;gap:12px}
+.ticker-item .ti-accent{color:var(--green)}
+.ticker-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.15)}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── Segments ── */
+.seg-intro{text-align:center;max-width:580px;margin:0 auto 56px}
+.seg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:900px){.seg-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.seg-grid{grid-template-columns:1fr}}
+.seg-card{background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-lg);padding:28px 24px;transition:all .2s;cursor:pointer;position:relative;overflow:hidden}
+.seg-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--green);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.seg-card:hover{border-color:var(--navy);transform:translateY(-3px);box-shadow:0 12px 32px rgba(13,33,55,.1)}
+.seg-card:hover::after{transform:scaleX(1)}
+.seg-icon{font-size:28px;margin-bottom:16px}
+.seg-name{font-family:var(--serif);font-size:21px;font-weight:400;font-style:italic;color:var(--navy);margin-bottom:8px;letter-spacing:.01em}
+.seg-desc{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:16px}
+.seg-hook{font-family:var(--mono);font-size:11px;color:var(--green-d);background:var(--green-lt);border-radius:6px;padding:8px 12px;line-height:1.5}
+.seg-arrow{margin-top:20px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--navy)}
+
+/* ── Metrics strip ── */
+.metrics-strip{background:var(--navy);padding:72px 0}
+.ms-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.08)}
+@media(max-width:700px){.ms-grid{grid-template-columns:1fr 1fr}}
+.ms-item{padding:40px 32px;background:var(--navy)}
+.ms-num{font-family:var(--display);font-size:56px;font-weight:900;color:var(--green);line-height:1;margin-bottom:8px}
+.ms-label{font-size:14px;color:rgba(255,255,255,.55);line-height:1.4}
+.ms-sub{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-top:6px}
+
+/* ════════════════════════════════════════════════════════════
+   HOME WHAT-IF SIMULATOR
+════════════════════════════════════════════════════════════ */
+.whatif-section{background:var(--bg2);padding:96px 0}
+.whatif-header{text-align:center;max-width:640px;margin:0 auto 48px}
+.whatif-header h2{font-family:var(--display);font-size:clamp(32px,4vw,48px);font-weight:900;color:var(--navy);margin-bottom:12px;line-height:1}
+.whatif-header p{font-size:16px;color:var(--muted);line-height:1.65}
+
+.simulator-shell{background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;max-width:980px;margin:0 auto}
+
+/* top bar */
+.sim-topbar{background:var(--navy);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.sim-topbar-left{display:flex;align-items:center;gap:12px}
+.sim-dot{width:10px;height:10px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite}
+.sim-title{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.sim-topbar-right{display:flex;align-items:center;gap:8px}
+.sim-tab{padding:6px 14px;border-radius:6px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;cursor:pointer;border:none;transition:all .2s}
+.sim-tab.inactive{background:rgba(255,255,255,.08);color:rgba(255,255,255,.45)}
+.sim-tab.active{background:var(--green);color:#fff}
+
+/* week grid */
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0;border-bottom:1px solid var(--border2)}
+.day-col{border-right:1px solid var(--border2)}
+.day-col:last-child{border-right:none}
+.day-header{padding:10px 8px;background:var(--bg2);border-bottom:1px solid var(--border2);text-align:center}
+.day-name{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.day-count{font-family:var(--display);font-size:16px;font-weight:700;color:var(--navy)}
+.day-km{font-family:var(--mono);font-size:10px;color:var(--green)}
+.tasks-area{padding:8px;min-height:220px;transition:background .2s}
+.tasks-area.drag-over{background:rgba(22,163,74,.06)}
+.task-chip{
+  background:var(--white);border:1.5px solid var(--border2);border-radius:6px;
+  padding:7px 8px;margin-bottom:6px;font-size:11px;color:var(--navy);
+  cursor:grab;transition:all .15s;display:flex;align-items:center;gap:6px;
+  user-select:none;
+}
+.task-chip:hover{border-color:var(--navy);box-shadow:0 2px 8px rgba(13,33,55,.1)}
+.task-chip.dragging{opacity:.4;cursor:grabbing}
+.task-chip.moved{background:var(--green-lt);border-color:rgba(22,163,74,.4)}
+.task-chip.removed{background:var(--red-lt);border-color:rgba(220,38,38,.3);opacity:.5}
+.task-icon{font-size:12px;flex-shrink:0}
+.task-label{font-size:11px;color:var(--navy);line-height:1.3;flex:1}
+.task-km{font-family:var(--mono);font-size:9px;color:var(--muted)}
+
+/* controls */
+.sim-controls{padding:16px 20px;border-bottom:1px solid var(--border2);background:var(--bg);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.sc-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.sc-hint{font-size:12px;color:var(--muted);flex:1}
+.run-btn{padding:9px 20px;background:var(--navy);color:#fff;border-radius:6px;font-family:var(--display);font-size:14px;font-weight:700;transition:all .15s}
+.run-btn:hover{background:var(--navy2)}
+.run-btn:disabled{opacity:.4;cursor:not-allowed}
+.reset-btn{padding:9px 16px;border:1.5px solid var(--border);color:var(--muted);border-radius:6px;font-family:var(--mono);font-size:11px;transition:all .15s}
+.reset-btn:hover{border-color:var(--navy);color:var(--navy)}
+
+/* impact panel */
+.impact-panel{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0;border-top:2px solid var(--border2)}
+@media(max-width:700px){.impact-panel{grid-template-columns:1fr 1fr}}
+.ip-item{padding:20px 20px;border-right:1px solid var(--border2);transition:all .4s}
+.ip-item:last-child{border-right:none}
+.ip-label{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.ip-before{font-family:var(--display);font-size:18px;font-weight:700;color:rgba(13,33,55,.35);margin-bottom:4px}
+.ip-after{font-family:var(--display);font-size:26px;font-weight:800;color:var(--navy);line-height:1}
+.ip-delta{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:11px;margin-top:6px;padding:3px 8px;border-radius:10px}
+.ip-delta.better{background:var(--green-lt);color:var(--green-d)}
+.ip-delta.worse{background:var(--red-lt);color:var(--red)}
+.ip-delta.neutral{background:var(--bg2);color:var(--muted)}
+.verdict-bar{padding:14px 20px;background:var(--bg2);display:flex;align-items:center;gap:12px}
+.verdict-icon{font-size:20px}
+.verdict-text{font-size:13px;color:var(--navy);line-height:1.5}
+.verdict-text strong{font-weight:600}
+
+/* Video */
+.video-wrap{background:var(--navy);border-radius:var(--radius-lg);aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;position:relative;overflow:hidden;cursor:pointer;transition:all .2s}
+.video-wrap::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.015) 0,rgba(255,255,255,.015) 1px,transparent 1px,transparent 40px)}
+.vw-play{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;transition:transform .2s;position:relative;z-index:1}
+.vw-play::after{content:'▶';color:#fff;font-size:22px;margin-left:4px}
+.video-wrap:hover .vw-play{transform:scale(1.1)}
+.vw-label{font-family:var(--display);font-size:18px;font-weight:700;color:rgba(255,255,255,.6);position:relative;z-index:1}
+.vw-sub{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.3);position:relative;z-index:1}
+
+/* Demo */
+.demo-section{background:var(--navy);padding:100px 0;position:relative;overflow:hidden}
+.demo-section::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,.02) 59px,rgba(255,255,255,.02) 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,.02) 59px,rgba(255,255,255,.02) 60px)}
+.demo-inner{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
+@media(max-width:860px){.demo-inner{grid-template-columns:1fr}}
+.demo-copy h2{font-family:var(--display);font-size:clamp(36px,4vw,52px);font-weight:900;color:#fff;line-height:1;margin-bottom:16px}
+.demo-copy h2 em{color:var(--green);font-style:normal}
+.demo-copy p{font-size:16px;color:rgba(255,255,255,.55);line-height:1.65;margin-bottom:32px}
+.demo-bullets{display:flex;flex-direction:column;gap:12px}
+.db-item{display:flex;align-items:center;gap:12px;font-size:14px;color:rgba(255,255,255,.6)}
+.db-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
+.demo-form-wrap{background:var(--white);border-radius:var(--radius-lg);padding:36px}
+.demo-form-wrap h3{font-family:var(--display);font-size:22px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.demo-form-wrap p{font-size:13px;color:var(--muted);margin-bottom:24px}
+.df-field{margin-bottom:16px}
+.df-field label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
+.df-field input,.df-field select{width:100%;background:var(--bg);border:1.5px solid var(--border2);border-radius:8px;padding:12px 14px;font-family:var(--sans);font-size:14px;color:var(--navy);outline:none;transition:border-color .2s}
+.df-field input:focus,.df-field select:focus{border-color:var(--blue)}
+.df-submit{width:100%;padding:14px;background:var(--green);color:#fff;border-radius:8px;font-family:var(--display);font-size:18px;font-weight:800;transition:background .15s;margin-top:8px}
+.df-submit:hover{background:var(--green-d)}
+.df-note{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;margin-top:10px;letter-spacing:.04em}
+
+/* ════════════════════════════════════════════════════════════
+   USE CASE PAGES — shared
+════════════════════════════════════════════════════════════ */
+.uc-hero{padding:120px 0 60px;background:var(--white);border-bottom:1px solid var(--border2)}
+.uc-back{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);margin-bottom:32px;cursor:pointer;transition:color .15s}
+.uc-back:hover{color:var(--navy)}
+.uc-hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+@media(max-width:860px){.uc-hero-grid{grid-template-columns:1fr}}
+.uc-tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--green-d);background:var(--green-lt);border-radius:4px;padding:4px 10px;margin-bottom:16px}
+.uc-title{font-family:var(--display);font-size:clamp(36px,5vw,60px);font-weight:900;color:var(--navy);line-height:.95;margin-bottom:20px}
+.uc-subtitle{font-size:17px;color:var(--muted);line-height:1.65;margin-bottom:32px;max-width:480px}
+.uc-proof-row{display:flex;gap:32px;flex-wrap:wrap;margin-bottom:32px}
+.upr-num{font-family:var(--display);font-size:36px;font-weight:900;color:var(--green);line-height:1}
+.upr-label{font-size:12px;color:var(--muted);margin-top:2px}
+.uc-visual-card{background:var(--navy);border-radius:var(--radius-lg);padding:28px;position:relative;overflow:hidden}
+.uc-visual-card::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 35px,rgba(255,255,255,.025) 35px,rgba(255,255,255,.025) 36px),repeating-linear-gradient(90deg,transparent,transparent 35px,rgba(255,255,255,.025) 35px,rgba(255,255,255,.025) 36px)}
+
+.ps-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border2);border-radius:var(--radius-lg);overflow:hidden;margin-top:48px}
+@media(max-width:700px){.ps-grid{grid-template-columns:1fr}}
+.ps-item{background:var(--white);padding:36px}
+.ps-label{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.ps-label.pain{color:#DC2626}
+.ps-label.solution{color:var(--green-d)}
+.ps-label::before{content:'';width:16px;height:1px}
+.ps-label.pain::before{background:#DC2626}
+.ps-label.solution::before{background:var(--green)}
+.ps-list{display:flex;flex-direction:column;gap:12px}
+.ps-list-item{display:flex;gap:12px;font-size:14px;color:var(--muted);line-height:1.5}
+.ps-list-item.pain-item::before{content:'→';font-weight:600;color:#DC2626;flex-shrink:0}
+.ps-list-item.solution-item::before{content:'→';font-weight:600;color:var(--green);flex-shrink:0}
+
+.tool-section{background:var(--bg2);padding:80px 0}
+.tool-header{text-align:center;max-width:580px;margin:0 auto 48px}
+.tool-header h2{font-family:var(--display);font-size:34px;font-weight:800;color:var(--navy);margin-bottom:10px}
+.tool-header p{font-size:15px;color:var(--muted)}
+
+/* ── Generic tool card shell ── */
+.tool-card{background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;max-width:900px;margin:0 auto}
+.tool-topbar{background:var(--navy);padding:12px 20px;display:flex;align-items:center;gap:10px}
+.tool-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+.tool-tb-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.tool-body{padding:28px}
+.tool-inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px}
+.ti-field{background:var(--bg);border:1.5px solid var(--border2);border-radius:8px;padding:14px 16px;transition:border-color .2s}
+.ti-field:focus-within{border-color:var(--blue)}
+.ti-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block}
+.ti-input{background:transparent;border:none;outline:none;width:100%;font-family:var(--display);font-size:28px;font-weight:700;color:var(--navy);-moz-appearance:textfield}
+.ti-input::-webkit-inner-spin-button{-webkit-appearance:none}
+.ti-unit{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
+.tool-run-btn{width:100%;padding:14px;background:var(--navy);color:#fff;border-radius:8px;font-family:var(--display);font-size:17px;font-weight:800;transition:background .15s;margin-bottom:20px}
+.tool-run-btn:hover{background:var(--navy2)}
+.tool-results{display:none}
+.tool-results.show{display:block}
+.tr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:600px){.tr-grid{grid-template-columns:1fr 1fr}}
+.tr-card{background:var(--green-lt);border:1px solid rgba(22,163,74,.2);border-radius:10px;padding:16px}
+.tr-label{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--green-d);margin-bottom:6px}
+.tr-val{font-family:var(--display);font-size:28px;font-weight:800;color:var(--navy)}
+.tr-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px}
+.tr-total{background:var(--navy);border-radius:10px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.tr-total-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.tr-total-val{font-family:var(--display);font-size:40px;font-weight:900;color:var(--green)}
+.tr-note{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6;padding:12px 14px;background:var(--bg2);border-radius:6px}
+
+.uc-cta{background:var(--bg2);padding:80px 0;text-align:center}
+.uc-cta h2{font-family:var(--display);font-size:clamp(32px,4vw,48px);font-weight:900;color:var(--navy);margin-bottom:12px}
+.uc-cta p{font-size:16px;color:var(--muted);margin-bottom:32px;max-width:480px;margin-left:auto;margin-right:auto}
+.uc-cta-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+footer{background:var(--navy);padding:48px 0}
+.footer-inner{max-width:1160px;width:100%;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
+.footer-brand{display:flex;align-items:center;gap:10px;color:white}
+.footer-brand-name{font-family:var(--sans);font-size:14px;font-weight:600;color:rgba(255,255,255,.7)}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap}
+.footer-link{font-size:13px;color:rgba(255,255,255,.35);cursor:pointer;transition:color .15s}
+.footer-link:hover{color:rgba(255,255,255,.7)}
+.footer-copy{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.2)}
+
+/* ── Responsive ── */
+@media(max-width:640px){.container{padding:0 20px}nav{padding:0 20px}.section{padding:64px 0}.nav-links{display:none}}
+
+/* ── Hero What-If Card ── */
+.hero-whatif-card{
+  background:var(--white);border:1.5px solid var(--border2);
+  border-radius:var(--radius-lg);overflow:hidden;
+  box-shadow:0 24px 64px rgba(13,33,55,.10);
+}
+.hwc-topbar{
+  background:var(--navy);padding:12px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.hwc-live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;flex-shrink:0}
+.hwc-topbar-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.hwc-badge{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:rgba(22,163,74,.8);background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.25);border-radius:12px;padding:3px 10px}
+
+.hwc-scenario-label{
+  padding:9px 16px;background:rgba(22,163,74,.06);
+  border-bottom:1px solid rgba(22,163,74,.12);
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;color:var(--green-d);font-weight:500;min-height:36px;
+}
+.hwc-sl-icon{font-size:13px;flex-shrink:0}
+
+/* Mini schedule grid */
+.hwc-schedule{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border-bottom:1px solid var(--border2)}
+.hwc-day-col{border-right:1px solid var(--border2)}
+.hwc-day-col:last-child{border-right:none}
+.hwc-day-hdr{
+  padding:8px 6px 6px;background:var(--bg2);
+  border-bottom:1px solid var(--border2);text-align:center;
+}
+.hwc-day-name{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.hwc-day-km{font-family:var(--display);font-size:14px;font-weight:700;color:var(--navy);line-height:1;margin-top:2px}
+.hwc-day-delta{font-family:var(--mono);font-size:9px;margin-top:1px;min-height:11px}
+.hwc-tasks{padding:6px;min-height:110px}
+.hwc-tasks.drag-over{background:rgba(22,163,74,.05)}
+
+.hwc-chip{
+  background:var(--bg);border:1px solid var(--border2);border-radius:5px;
+  padding:5px 7px;margin-bottom:5px;
+  display:flex;align-items:flex-start;gap:5px;
+  cursor:grab;transition:all .15s;user-select:none;
+}
+.hwc-chip:hover{border-color:var(--navy);background:var(--white);box-shadow:0 2px 6px rgba(13,33,55,.08)}
+.hwc-chip.dragging{opacity:.35;cursor:grabbing}
+.hwc-chip.moved{background:rgba(22,163,74,.08);border-color:rgba(22,163,74,.35)}
+.hwc-chip-icon{font-size:12px;flex-shrink:0;margin-top:1px}
+.hwc-chip-body{flex:1;min-width:0}
+.hwc-chip-name{font-size:10px;font-weight:500;color:var(--navy);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hwc-chip-km{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:1px}
+
+/* Delta panel */
+.hwc-delta-panel{padding:14px 16px;background:var(--bg2);border-top:1px solid var(--border2)}
+.hwc-delta-row{display:flex;align-items:center;gap:0;margin-bottom:10px}
+.hwc-delta-item{flex:1;display:flex;flex-direction:column;gap:2px}
+.hwc-delta-divider{width:1px;height:54px;background:var(--border2);margin:0 14px}
+.hwc-delta-label{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.hwc-delta-before{font-family:var(--display);font-size:18px;font-weight:700;color:rgba(13,33,55,.35)}
+.hwc-delta-arrow{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.hwc-delta-after{font-family:var(--display);font-size:20px;font-weight:800;color:var(--navy)}
+.hwc-delta-pill{
+  display:inline-flex;align-items:center;
+  font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:10px;
+  background:var(--border2);color:var(--muted);
+  transition:all .3s;margin-top:2px;
+}
+.hwc-delta-pill.better{background:var(--green-lt);color:var(--green-d)}
+.hwc-delta-pill.worse{background:var(--red-lt);color:var(--red)}
+
+.hwc-verdict{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 12px;border-radius:8px;background:var(--white);
+  border:1px solid var(--border2);transition:all .3s;
+}
+.hwc-verdict-icon{font-size:16px;flex-shrink:0}
+.hwc-verdict-text-el{font-size:12px;color:var(--muted);line-height:1.4}
+.hwc-verdict.better{background:var(--green-lt);border-color:rgba(22,163,74,.2)}
+.hwc-verdict.worse{background:var(--red-lt);border-color:rgba(220,38,38,.15)}
+.hwc-chip.hwc-just-moved{
+  animation:hwcPop .4s ease;
+  background:rgba(22,163,74,.12);
+  border-color:rgba(22,163,74,.5) !important;
+}
+@keyframes hwcPop{0%{transform:scale(.88);opacity:.5}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+
+/* ── Municipality service point list ── */
+.muni-sp-row{
+  display:grid;grid-template-columns:1fr 80px 80px 120px 120px;
+  gap:0;align-items:center;border-bottom:1px solid var(--border2);
+  padding:10px 20px;transition:background .15s;
+}
+.muni-sp-row:last-child{border-bottom:none}
+.muni-sp-row:hover{background:var(--bg2)}
+.muni-sp-name{font-size:13px;font-weight:500;color:var(--navy)}
+.muni-sp-zone{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.muni-sp-cur{font-family:var(--mono);font-size:11px;color:var(--navy);text-align:center}
+.muni-sp-sug{
+  display:flex;align-items:center;justify-content:center;gap:4px;
+  font-family:var(--mono);font-size:11px;
+}
+.muni-sp-sug.down{color:var(--green-d);background:var(--green-lt);border-radius:4px;padding:2px 8px}
+.muni-sp-sug.same{color:var(--muted)}
+.muni-sp-toggle{display:flex;align-items:center;justify-content:flex-end;gap:6px}
+.muni-sp-hdr{
+  display:grid;grid-template-columns:1fr 80px 80px 120px 120px;
+  gap:0;padding:8px 20px;background:var(--bg2);border-bottom:1px solid var(--border2);
+}
+.muni-sp-hdr span{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.muni-toggle-btn{
+  padding:4px 12px;border-radius:5px;font-family:var(--mono);font-size:10px;
+  cursor:pointer;border:1.5px solid;transition:all .15s;
+}
+.muni-toggle-btn.accepted{background:var(--green-lt);border-color:rgba(22,163,74,.4);color:var(--green-d)}
+.muni-toggle-btn.rejected{background:var(--bg2);border-color:var(--border2);color:var(--muted)}
+.muni-toggle-btn.na{background:transparent;border-color:transparent;color:var(--muted);cursor:default;font-size:9px}
+.muni-sum-cell{background:white;padding:14px 18px}
+.muni-sum-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:4px}
+.muni-sum-val{font-family:var(--display);font-size:24px;font-weight:800;color:var(--navy)}
+.muni-sum-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px}
+
+/* ── Fleet step UI ── */
+.ft-step{padding:20px 20px 16px}
+.ft-step-label{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.ft-step-num{background:var(--navy);color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+.ft-scenario-btn{
+  padding:8px 16px;border-radius:7px;font-family:var(--sans);font-size:13px;font-weight:500;
+  cursor:pointer;border:1.5px solid var(--border2);background:var(--bg);color:var(--navy);
+  transition:all .15s;
+}
+.ft-scenario-btn.active{background:var(--navy);color:white;border-color:var(--navy)}
+.ft-scenario-btn:hover:not(.active){border-color:var(--navy);background:var(--bg2)}
+.ft-analysis-step{
+  border:1.5px solid var(--border2);border-radius:10px;overflow:hidden;
+  animation:ftStepIn .35s ease forwards;opacity:0;
+}
+@keyframes ftStepIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.ft-analysis-step .fas-header{
+  padding:10px 16px;background:var(--bg2);
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);
+  border-bottom:1px solid var(--border2);
+}
+.ft-analysis-step .fas-body{padding:14px 16px;font-size:13px;color:var(--navy);line-height:1.6}
+.ft-analysis-step.positive .fas-header{background:rgba(22,163,74,.06);border-bottom-color:rgba(22,163,74,.12)}
+.ft-analysis-step.positive .fas-header{color:var(--green-d)}
+.ft-analysis-step.warning .fas-header{background:var(--amber-lt);border-bottom-color:rgba(180,83,9,.15)}
+.ft-analysis-step.warning .fas-header{color:var(--amber)}
+.ft-analysis-step.negative .fas-header{background:var(--red-lt);border-bottom-color:rgba(220,38,38,.15)}
+.ft-analysis-step.negative .fas-header{color:var(--red)}
+</style>
+</head>
+<body>
+
+<!-- SVG Logo macro -->
+<svg style="display:none">
+  <symbol id="evreka-logo-dark" viewBox="0 0 163 28">
+    <path d="M43.8985 27.9364C40.6745 27.9364 38.0063 26.9199 35.894 24.9029C33.7817 22.8859 32.7176 20.2177 32.7176 16.9301C32.7176 13.7537 33.7975 11.0538 35.9416 8.8144C38.0857 6.59091 40.7697 5.46329 43.962 5.46329C47.4402 5.46329 50.1243 6.62268 51.9825 8.92557C53.7136 11.1173 54.5553 14.119 54.5077 17.9307H37.7998C37.7998 19.5665 38.3557 20.9483 39.4833 22.0759C40.6109 23.2035 42.0244 23.7753 43.7238 23.7753C45.0738 23.7753 46.3126 23.4259 47.4084 22.7271C48.5043 22.0282 49.3302 21.1071 49.8543 19.9953L54.063 21.9647C53.3801 23.5688 52.1889 24.9347 50.4895 26.0305C48.5361 27.3011 46.3443 27.9364 43.8985 27.9364ZM43.8191 9.46556C42.0721 9.46556 40.6109 10.0691 39.4357 11.292C38.4827 12.2926 38.0063 13.2614 38.0063 14.1984H49.6002C49.6002 13.2614 49.2349 12.3402 48.5202 11.4349C47.4402 10.1167 45.8838 9.46556 43.8191 9.46556Z" fill="#0D2137"/><path d="M65.229 27.4123L56.5097 5.89218H61.6237L67.516 20.8531L73.1541 5.89218H78.2363L69.6124 27.4123H65.229Z" fill="#0D2137"/><path d="M92.9571 10.5775C92.1153 10.2758 91.3847 10.1328 90.7812 10.1328C89.3042 10.1328 88.1766 10.7681 87.3825 12.0228C86.7313 13.0551 86.3978 14.278 86.3978 15.7074V27.4125H81.6332V5.89233H86.1913V9.00521C87.2713 6.57526 89.1613 5.35234 91.8771 5.35234C92.83 5.35234 93.7035 5.51116 94.4976 5.84468L92.9571 10.5775Z" fill="#0D2137"/><path d="M106.617 27.9364C103.393 27.9364 100.725 26.9199 98.6127 24.9029C96.5004 22.8859 95.4363 20.2177 95.4363 16.9301C95.4363 13.7537 96.5163 11.0538 98.6604 8.8144C100.804 6.59091 103.488 5.46329 106.681 5.46329C110.159 5.46329 112.843 6.62268 114.701 8.92557C116.432 11.1173 117.274 14.119 117.226 17.9307H100.519C100.519 19.5665 101.074 20.9483 102.202 22.0759C103.33 23.2035 104.743 23.7753 106.443 23.7753C107.793 23.7753 109.015 23.4259 110.127 22.7271C111.223 22.0282 112.049 21.1071 112.573 19.9953L116.782 21.9647C116.099 23.5688 114.908 24.9347 113.208 26.0305C111.271 27.3011 109.079 27.9364 106.617 27.9364ZM106.554 9.46556C104.807 9.46556 103.346 10.0691 102.17 11.292C101.217 12.2926 100.741 13.2614 100.741 14.1984H112.335C112.335 13.2614 111.969 12.3402 111.255 11.4349C110.175 10.1167 108.602 9.46556 106.554 9.46556Z" fill="#0D2137"/><path d="M134.06 27.4124L126.357 16.4379V27.4124H121.482V0H126.357V14.4685L133.584 5.87635H139.365L130.916 15.4056L140.032 27.3965H134.06V27.4124Z" fill="#0D2137"/><path d="M6.28928 11.626C6.28928 11.626 5.3046 8.41782 4.35168 5.28906H2.31878C1.03233 5.30494 0 6.33728 0 7.60784V15.8188C2.46171 15.1836 4.62167 14.6118 4.62167 14.6118C5.93988 14.2783 6.68633 12.9283 6.28928 11.626Z" fill="#0D2137"/><path d="M20.3923 5.30469H8.89374C9.73549 8.0364 10.4978 10.5458 10.4978 10.5458C10.8949 11.8481 12.2925 12.6263 13.6107 12.2769C13.6107 12.2769 18.3118 11.054 22.6952 9.91048V7.9411V7.60758C22.7111 6.33702 21.6629 5.30469 20.3923 5.30469Z" fill="#0D2137"/><path d="M13.2302 19.4242C13.2302 19.4242 14.4532 23.4264 15.8667 28.0005H20.393C21.6636 28.0005 22.7118 26.9681 22.7118 25.6817V14.4055C18.7572 15.4378 14.9137 16.4384 14.9137 16.4384C13.5955 16.7878 12.8332 18.1377 13.2302 19.4242Z" fill="#0D2137"/><path d="M10.9898 27.0793L9.14753 20.7582C9.13165 20.6629 9.09989 20.5835 9.06812 20.5041V20.4882C8.79813 19.7259 8.17873 19.1224 7.40051 18.8524C7.38463 18.8524 7.38463 18.8365 7.36875 18.8365C7.35286 18.8365 7.33698 18.8206 7.3211 18.8206C6.8764 18.6777 6.38406 18.6618 5.92348 18.773C5.92348 18.773 2.98531 19.5353 0.03125 20.3135V25.6816C0.03125 26.9522 1.06358 28.0004 2.35003 28.0004H11.3393C11.244 27.6828 11.1487 27.381 11.0534 27.0793Z" fill="#3DA836"/><path d="M158.215 5.89262V8.70374C157.628 7.71906 156.707 6.94084 155.452 6.3532C154.197 5.76557 152.8 5.47969 151.275 5.47969C148.098 5.47969 145.557 6.60731 143.667 8.84668C141.92 10.9431 141.047 13.5954 141.047 16.7718C141.047 20.0276 141.968 22.6958 143.826 24.7922C145.684 26.8887 148.146 27.9528 151.195 27.9528C154.308 27.9528 156.643 26.8093 158.199 24.5222V27.4287H162.678V5.89262H158.215ZM151.64 24.1887C148.098 24.1887 145.224 20.8058 145.224 16.6448C145.224 12.4678 148.098 9.10079 151.64 9.10079C153.689 9.10079 155.515 10.2284 156.691 11.9913C157.215 12.7219 157.58 13.5636 157.786 14.4848C157.961 15.1677 158.056 15.8983 158.056 16.6448C158.056 20.8217 155.182 24.1887 151.64 24.1887Z" fill="#0D2137"/>
+  </symbol>
+  <symbol id="evreka-logo-white" viewBox="0 0 163 28">
+    <path d="M43.8985 27.9364C40.6745 27.9364 38.0063 26.9199 35.894 24.9029C33.7817 22.8859 32.7176 20.2177 32.7176 16.9301C32.7176 13.7537 33.7975 11.0538 35.9416 8.8144C38.0857 6.59091 40.7697 5.46329 43.962 5.46329C47.4402 5.46329 50.1243 6.62268 51.9825 8.92557C53.7136 11.1173 54.5553 14.119 54.5077 17.9307H37.7998C37.7998 19.5665 38.3557 20.9483 39.4833 22.0759C40.6109 23.2035 42.0244 23.7753 43.7238 23.7753C45.0738 23.7753 46.3126 23.4259 47.4084 22.7271C48.5043 22.0282 49.3302 21.1071 49.8543 19.9953L54.063 21.9647C53.3801 23.5688 52.1889 24.9347 50.4895 26.0305C48.5361 27.3011 46.3443 27.9364 43.8985 27.9364ZM43.8191 9.46556C42.0721 9.46556 40.6109 10.0691 39.4357 11.292C38.4827 12.2926 38.0063 13.2614 38.0063 14.1984H49.6002C49.6002 13.2614 49.2349 12.3402 48.5202 11.4349C47.4402 10.1167 45.8838 9.46556 43.8191 9.46556Z" fill="white"/><path d="M65.229 27.4123L56.5097 5.89218H61.6237L67.516 20.8531L73.1541 5.89218H78.2363L69.6124 27.4123H65.229Z" fill="white"/><path d="M92.9571 10.5775C92.1153 10.2758 91.3847 10.1328 90.7812 10.1328C89.3042 10.1328 88.1766 10.7681 87.3825 12.0228C86.7313 13.0551 86.3978 14.278 86.3978 15.7074V27.4125H81.6332V5.89233H86.1913V9.00521C87.2713 6.57526 89.1613 5.35234 91.8771 5.35234C92.83 5.35234 93.7035 5.51116 94.4976 5.84468L92.9571 10.5775Z" fill="white"/><path d="M106.617 27.9364C103.393 27.9364 100.725 26.9199 98.6127 24.9029C96.5004 22.8859 95.4363 20.2177 95.4363 16.9301C95.4363 13.7537 96.5163 11.0538 98.6604 8.8144C100.804 6.59091 103.488 5.46329 106.681 5.46329C110.159 5.46329 112.843 6.62268 114.701 8.92557C116.432 11.1173 117.274 14.119 117.226 17.9307H100.519C100.519 19.5665 101.074 20.9483 102.202 22.0759C103.33 23.2035 104.743 23.7753 106.443 23.7753C107.793 23.7753 109.015 23.4259 110.127 22.7271C111.223 22.0282 112.049 21.1071 112.573 19.9953L116.782 21.9647C116.099 23.5688 114.908 24.9347 113.208 26.0305C111.271 27.3011 109.079 27.9364 106.617 27.9364ZM106.554 9.46556C104.807 9.46556 103.346 10.0691 102.17 11.292C101.217 12.2926 100.741 13.2614 100.741 14.1984H112.335C112.335 13.2614 111.969 12.3402 111.255 11.4349C110.175 10.1167 108.602 9.46556 106.554 9.46556Z" fill="white"/><path d="M134.06 27.4124L126.357 16.4379V27.4124H121.482V0H126.357V14.4685L133.584 5.87635H139.365L130.916 15.4056L140.032 27.3965H134.06V27.4124Z" fill="white"/><path d="M6.28928 11.626C6.28928 11.626 5.3046 8.41782 4.35168 5.28906H2.31878C1.03233 5.30494 0 6.33728 0 7.60784V15.8188C2.46171 15.1836 4.62167 14.6118 4.62167 14.6118C5.93988 14.2783 6.68633 12.9283 6.28928 11.626Z" fill="white"/><path d="M20.3923 5.30469H8.89374C9.73549 8.0364 10.4978 10.5458 10.4978 10.5458C10.8949 11.8481 12.2925 12.6263 13.6107 12.2769C13.6107 12.2769 18.3118 11.054 22.6952 9.91048V7.9411V7.60758C22.7111 6.33702 21.6629 5.30469 20.3923 5.30469Z" fill="white"/><path d="M13.2302 19.4242C13.2302 19.4242 14.4532 23.4264 15.8667 28.0005H20.393C21.6636 28.0005 22.7118 26.9681 22.7118 25.6817V14.4055C18.7572 15.4378 14.9137 16.4384 14.9137 16.4384C13.5955 16.7878 12.8332 18.1377 13.2302 19.4242Z" fill="white"/><path d="M10.9898 27.0793L9.14753 20.7582C9.13165 20.6629 9.09989 20.5835 9.06812 20.5041V20.4882C8.79813 19.7259 8.17873 19.1224 7.40051 18.8524C7.38463 18.8524 7.38463 18.8365 7.36875 18.8365C7.35286 18.8365 7.33698 18.8206 7.3211 18.8206C6.8764 18.6777 6.38406 18.6618 5.92348 18.773C5.92348 18.773 2.98531 19.5353 0.03125 20.3135V25.6816C0.03125 26.9522 1.06358 28.0004 2.35003 28.0004H11.3393C11.244 27.6828 11.1487 27.381 11.0534 27.0793Z" fill="#3DA836"/><path d="M158.215 5.89262V8.70374C157.628 7.71906 156.707 6.94084 155.452 6.3532C154.197 5.76557 152.8 5.47969 151.275 5.47969C148.098 5.47969 145.557 6.60731 143.667 8.84668C141.92 10.9431 141.047 13.5954 141.047 16.7718C141.047 20.0276 141.968 22.6958 143.826 24.7922C145.684 26.8887 148.146 27.9528 151.195 27.9528C154.308 27.9528 156.643 26.8093 158.199 24.5222V27.4287H162.678V5.89262H158.215ZM151.64 24.1887C148.098 24.1887 145.224 20.8058 145.224 16.6448C145.224 12.4678 148.098 9.10079 151.64 9.10079C153.689 9.10079 155.515 10.2284 156.691 11.9913C157.215 12.7219 157.58 13.5636 157.786 14.4848C157.961 15.1677 158.056 15.8983 158.056 16.6448C158.056 20.8217 155.182 24.1887 151.64 24.1887Z" fill="white"/>
+  </symbol>
+</svg>
+
+<nav>
+  <div class="nav-brand" onclick="showPage('home')">
+    <svg width="108" height="18"><use href="#evreka-logo-dark"/></svg>
+    <span class="nav-brand-name">Digital Twin</span>
+  </div>
+  <div class="nav-links">
+    <span class="nav-link" onclick="showPage('home')">Home</span>
+    <span class="nav-link" onclick="showPage('waste')">Waste Operators</span>
+    <span class="nav-link" onclick="showPage('municipalities')">Municipalities</span>
+    <span class="nav-link" onclick="showPage('esg')">ESG</span>
+    <span class="nav-link" onclick="showPage('fleet')">Fleet Growth</span>
+    <span class="nav-link" onclick="showPage('logistics')">Logistics</span>
+  </div>
+  <button class="nav-cta" onclick="openDemo()">Request Demo</button>
+</nav>
+
+<!-- ═══════════════════════ HOME PAGE ═══════════════════════ -->
+<div id="page-home" class="page active">
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-kicker">What-If Decision Engine</div>
+        <h1 class="hero-title">Stop guessing.<br>Start <em>simulating.</em></h1>
+        <p class="hero-sub">Evreka Digital Twin is a What-If decision engine for complex operations. Test any scenario — route restructuring, fleet sizing, contract pricing, shift timing, new service zones, ESG targets — and see the measurable impact before committing. Whether you're pricing a tender bid, planning a fleet investment, or deciding how to restructure next week's schedule, the simulation runs first.</p>
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="openDemo()">Request a demo →</button>
+          <button class="btn-outline" onclick="document.getElementById('whatif-anchor').scrollIntoView({behavior:'smooth'})">Try the simulator ↓</button>
+        </div>
+
+      </div>
+      <div>
+        <div class="hero-whatif-card">
+          <div class="hwc-topbar">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="hwc-live-dot"></div>
+              <span class="hwc-topbar-label">Digital Twin — What-If simulation</span>
+            </div>
+            <div class="hwc-badge" id="hwc-scenario-badge">Scenario 1 of 3</div>
+          </div>
+          <div class="hwc-scenario-label" id="hwc-scenario-label">
+            <span class="hwc-sl-icon">🔄</span>
+            <span id="hwc-sl-text">Running What-If scenarios automatically…</span>
+          </div>
+          <div class="hwc-schedule" id="hwcSchedule"></div>
+          <div class="hwc-delta-panel">
+            <div class="hwc-delta-row">
+              <div class="hwc-delta-item">
+                <div class="hwc-delta-label">Weekly distance</div>
+                <div class="hwc-delta-before" id="hd-dist-before">605 km</div>
+                <div class="hwc-delta-arrow">→</div>
+                <div class="hwc-delta-after" id="hd-dist-after">—</div>
+                <div class="hwc-delta-pill" id="hd-dist-pill">Calculating…</div>
+              </div>
+              <div class="hwc-delta-divider"></div>
+              <div class="hwc-delta-item">
+                <div class="hwc-delta-label">Fuel cost / week</div>
+                <div class="hwc-delta-before" id="hd-fuel-before">€313</div>
+                <div class="hwc-delta-arrow">→</div>
+                <div class="hwc-delta-after" id="hd-fuel-after">—</div>
+                <div class="hwc-delta-pill" id="hd-fuel-pill">Calculating…</div>
+              </div>
+            </div>
+            <div class="hwc-verdict" id="hwc-verdict">
+              <span id="hwc-verdict-text" style="font-size:12px;color:var(--muted)">Watching the simulation run…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ticker-section"><div class="ticker-track" id="tickerTrack"></div></div>
+
+<section class="section">
+  <div class="container">
+    <div class="eyebrow reveal">How it works</div>
+    <h2 style="font-family:var(--display);font-size:clamp(36px,4vw,52px);font-weight:900;color:var(--navy);max-width:560px;line-height:1;margin-bottom:16px" class="reveal">Three steps from question to decision</h2>
+    <p style="font-size:16px;color:var(--muted);max-width:520px" class="reveal">The Digital Twin is not a dashboard. It's a What-If engine — answer operational questions before they become costly mistakes.</p>
+    <div class="hiw-grid reveal">
+      <div class="hiw-item"><div class="hiw-num">01</div><div class="hiw-icon">🔁</div><div class="hiw-title">Mirror your operation</div><div class="hiw-desc">The Twin ingests your real data — routes, fleet, service points, shift timings — and creates a live virtual replica of your operation.</div></div>
+      <div class="hiw-item"><div class="hiw-num">02</div><div class="hiw-icon">⚡</div><div class="hiw-title">Run the What-If</div><div class="hiw-desc">Change any variable: move a task between days, add a vehicle, shift start time, test a new customer, price a tender bid. The Twin runs the scenario instantly.</div></div>
+      <div class="hiw-item"><div class="hiw-num">03</div><div class="hiw-icon">✓</div><div class="hiw-title">Decide with evidence</div><div class="hiw-desc">See the delta — distance, time, cost, capacity, CO₂ — for every affected part of the operation. Apply only when the simulation confirms it's the right call.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ HOME WHAT-IF SIMULATOR ═══ -->
+<section class="whatif-section" id="whatif-anchor">
+  <div class="container">
+    <div class="whatif-header reveal">
+      <div class="eyebrow" style="justify-content:center">Interactive What-If</div>
+      <h2>Make a change. See the impact. Decide.</h2>
+      <p>This is what a Digital Twin What-If looks like. A real weekly service plan — 7 routes, 7 days. Drag any task to a different day, or click to remove it. Then run the simulation to see whether your change improved or worsened the operation — before it touches reality.</p>
+    </div>
+
+    <div class="simulator-shell reveal">
+      <!-- topbar -->
+      <div class="sim-topbar">
+        <div class="sim-topbar-left">
+          <div class="sim-dot"></div>
+          <span class="sim-title">Weekly service plan — What-If editor</span>
+        </div>
+        <div class="sim-topbar-right">
+          <button class="sim-tab active" id="tab-editor">Editor</button>
+          <button class="sim-tab inactive" id="tab-impact" style="display:none">Impact Report</button>
+        </div>
+      </div>
+
+      <!-- controls bar -->
+      <div class="sim-controls">
+        <span class="sc-label">Actions</span>
+        <span class="sc-hint">🖱 Drag tasks between days to reassign · Click a task to mark it removed</span>
+        <button class="reset-btn" onclick="resetSimulator()">↺ Reset</button>
+        <button class="run-btn" id="run-btn" onclick="runSimulation()">↗ Run simulation</button>
+      </div>
+
+      <!-- week grid -->
+      <div class="week-grid" id="weekGrid"></div>
+
+      <!-- impact panel (hidden until run) -->
+      <div id="impactPanel" style="display:none">
+        <div class="impact-panel" id="impactMetrics"></div>
+        <div class="verdict-bar" id="verdictBar"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Segments -->
+<section class="section" style="background:var(--bg2);padding-top:80px;padding-bottom:80px">
+  <div class="container">
+    <div class="seg-intro reveal">
+      <div class="eyebrow" style="justify-content:center">Who is it for</div>
+      <h2 style="font-family:var(--display);font-size:clamp(32px,4vw,48px);font-weight:900;color:var(--navy);margin-bottom:12px">Your operation. Your What-If.</h2>
+      <p style="font-size:15px;color:var(--muted)">Every segment has different decisions to make and different metrics that matter. The Digital Twin is configured around your specific questions.</p>
+    </div>
+    <div class="seg-grid reveal">
+      <div class="seg-card" onclick="showPage('waste')"><div class="seg-icon">🗑️</div><div class="seg-name">Waste Operators</div><div class="seg-desc">Route profitability, task reassignment, and contract pricing simulations for private waste management companies.</div><div class="seg-hook">"What if I move Monday's stop to Tuesday — does that reduce total km or increase it?"</div><div class="seg-arrow">Explore use case <span style="color:var(--green)">→</span></div></div>
+      <div class="seg-card" onclick="showPage('municipalities')"><div class="seg-icon">🏛️</div><div class="seg-name">Municipalities</div><div class="seg-desc">Collection frequency optimisation, shift timing, and budget justification for public authorities.</div><div class="seg-hook">"Which containers don't need daily collection? What's the optimal visit frequency for each zone?"</div><div class="seg-arrow">Explore use case <span style="color:var(--green)">→</span></div></div>
+      <div class="seg-card" onclick="showPage('esg')"><div class="seg-icon">🌍</div><div class="seg-name">ESG & Sustainability</div><div class="seg-desc">Verified CO₂ reduction projections tied to specific route decisions — not estimates.</div><div class="seg-hook">"If we optimised routes, how much carbon would we actually avoid — and can we put it in the report?"</div><div class="seg-arrow">Explore use case <span style="color:var(--green)">→</span></div></div>
+      <div class="seg-card" onclick="showPage('fleet')"><div class="seg-icon">🚛</div><div class="seg-name">Fleet Growth</div><div class="seg-desc">Vehicle ROI, zone feasibility, and capacity absorption testing before any capital commitment.</div><div class="seg-hook">"Can our current fleet absorb this new contract, or do we need another vehicle?"</div><div class="seg-arrow">Explore use case <span style="color:var(--green)">→</span></div></div>
+      <div class="seg-card" onclick="showPage('logistics')"><div class="seg-icon">📦</div><div class="seg-name">Logistics & Distribution</div><div class="seg-desc">Shipment assignment, load balancing, and return trip optimisation before dispatch.</div><div class="seg-hook">"What if we consolidated these two runs — what does it save, and does it break any time windows?"</div><div class="seg-arrow">Explore use case <span style="color:var(--green)">→</span></div></div>
+      <div class="seg-card" style="background:var(--navy);border-color:var(--navy);cursor:default"><div style="height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:12px;min-height:200px"><div style="font-family:var(--display);font-size:32px;font-weight:900;color:var(--green)">Custom</div><div style="font-family:var(--display);font-size:18px;font-weight:700;color:#fff">Built around your operation</div><div style="font-size:13px;color:rgba(255,255,255,.4);padding:0 12px">Every Digital Twin is configured for your specific decisions — not an off-the-shelf module list</div></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="metrics-strip">
+  <div class="container">
+    <div class="ms-grid">
+      <div class="ms-item reveal"><div class="ms-num">34.7%</div><div class="ms-label">Reduction in total weekly distance — same fleet, same service points</div><div class="ms-sub">Simulation output</div></div>
+      <div class="ms-item reveal"><div class="ms-num">4h 49m</div><div class="ms-label">Time recovered per week through What-If route optimisation</div><div class="ms-sub">Operational delta</div></div>
+      <div class="ms-item reveal"><div class="ms-num">3</div><div class="ms-label">Metric dimensions simulated at once: operational, financial, environmental</div><div class="ms-sub">What-If output</div></div>
+      <div class="ms-item reveal"><div class="ms-num">0</div><div class="ms-label">Additional resources, vehicles or staff required to achieve simulated improvements</div><div class="ms-sub">Same fleet</div></div>
+    </div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="eyebrow reveal" style="justify-content:center">Product walkthrough</div>
+    <h2 style="font-family:var(--display);font-size:clamp(32px,4vw,46px);font-weight:900;color:var(--navy);text-align:center;margin-bottom:40px" class="reveal">See the What-If in action</h2>
+    <div class="video-wrap reveal" onclick="openDemo()" style="max-width:800px;margin:0 auto">
+      <div class="vw-play"></div>
+      <div class="vw-label">Digital Twin — Product Demo</div>
+      <div class="vw-sub">Request access to watch the full walkthrough</div>
+    </div>
+  </div>
+</section>
+
+<section class="demo-section" id="demo-anchor">
+  <div class="container">
+    <div class="demo-inner">
+      <div class="demo-copy">
+        <div class="eyebrow" style="color:rgba(255,255,255,.3)"><span style="background:rgba(255,255,255,.1);width:20px;height:1px;display:inline-block"></span>Request a demo</div>
+        <h2>Run the<br><em>What-If</em><br>on your operation.</h2>
+        <p>Tell us about your fleet. We'll show you what the Digital Twin simulation finds on a real operation at your scale.</p>
+        <div class="demo-bullets">
+          <div class="db-item"><div class="db-dot"></div>20-minute live walkthrough</div>
+          <div class="db-item"><div class="db-dot"></div>No data preparation required</div>
+          <div class="db-item"><div class="db-dot"></div>Simulation output specific to your operation</div>
+          <div class="db-item"><div class="db-dot"></div>Configured for waste, municipal, and logistics operations</div>
+        </div>
+      </div>
+      <div class="demo-form-wrap">
+        <h3>Book a 20-min demo</h3>
+        <p>We'll reach out within 1 business day to schedule.</p>
+        <div class="df-field"><label>First name</label><input type="text" id="df-name" placeholder="Your name"></div>
+        <div class="df-field"><label>Work email</label><input type="email" id="df-email" placeholder="you@company.com"></div>
+        <div class="df-field"><label>Company</label><input type="text" id="df-company" placeholder="Company name"></div>
+        <div class="df-field"><label>Operation type</label><select id="df-type"><option value="">Select your operation type</option><option>Private Waste Management</option><option>Municipality / Public Authority</option><option>Fleet Expansion Operator</option><option>Logistics & Distribution</option><option>Recycling & Treatment Facility</option><option>Other</option></select></div>
+        <button class="df-submit" onclick="submitDemo()">Request demo →</button>
+        <div class="df-note">Or <a href="https://form.jotform.com/252943339505966" target="_blank" style="color:var(--blue);text-decoration:underline">fill out the full form here</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="footer-inner"><div class="footer-brand"><svg width="90" height="16"><use href="#evreka-logo-white"/></svg><span class="footer-brand-name">Digital Twin</span></div><div class="footer-links"><span class="footer-link" onclick="showPage('waste')">Waste Operators</span><span class="footer-link" onclick="showPage('municipalities')">Municipalities</span><span class="footer-link" onclick="showPage('esg')">ESG</span><span class="footer-link" onclick="showPage('fleet')">Fleet Growth</span><span class="footer-link" onclick="showPage('logistics')">Logistics</span></div><div class="footer-copy">© 2026 Evreka · evreka.co</div></div></footer>
+</div><!-- /page-home -->
+
+<!-- ═══════════════════════ WASTE OPERATORS ═══════════════════════ -->
+<div id="page-waste" class="page">
+<section class="uc-hero"><div class="container">
+  <div class="uc-back" onclick="showPage('home')">← Back to overview</div>
+  <div class="uc-hero-grid">
+    <div>
+      <div class="uc-tag">🗑️ Private Waste Management</div>
+      <h1 class="uc-title">Every route change is a decision.<br>Make it with data.</h1>
+      <p class="uc-subtitle">Before any task reassignment, contract pricing decision, or fleet restructuring — run the What-If. See the time, distance, and cost delta before it hits the road.</p>
+      <div class="uc-proof-row"><div class="upr-item"><div class="upr-num">~35%</div><div class="upr-label">Distance reduction</div></div><div class="upr-item"><div class="upr-num">~29%</div><div class="upr-label">Time saving</div></div><div class="upr-item"><div class="upr-num">0</div><div class="upr-label">Extra vehicles</div></div></div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap"><button class="btn-green" onclick="openDemo()">Request a demo →</button><button class="btn-outline" onclick="document.getElementById('waste-tool').scrollIntoView({behavior:'smooth'})">Try the simulator ↓</button></div>
+    </div>
+    <div class="uc-visual-card"><div style="position:relative;z-index:1"><div style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:16px">Impact report — What-If simulation</div><div style="display:flex;flex-direction:column;gap:10px"><div style="display:grid;grid-template-columns:1fr 1fr 80px;gap:8px;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.3);padding:0 14px;margin-bottom:4px"><span>Metric</span><span>Your Plan</span><span>What-If</span></div><div style="background:rgba(255,255,255,.06);border-radius:8px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr 80px;gap:8px;align-items:center"><span style="font-size:13px;color:rgba(255,255,255,.6)">Total distance</span><span style="font-family:var(--display);font-size:20px;font-weight:700;color:rgba(255,255,255,.4)">847 km</span><span style="font-family:var(--display);font-size:20px;font-weight:700;color:var(--green)">553 km</span></div><div style="background:rgba(255,255,255,.06);border-radius:8px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr 80px;gap:8px;align-items:center"><span style="font-size:13px;color:rgba(255,255,255,.6)">Total duration</span><span style="font-family:var(--display);font-size:20px;font-weight:700;color:rgba(255,255,255,.4)">16h 48m</span><span style="font-family:var(--display);font-size:20px;font-weight:700;color:var(--green)">11h 58m</span></div><div style="background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:14px;text-align:center;margin-top:8px"><div style="font-family:var(--mono);font-size:10px;color:rgba(22,163,74,.6);text-transform:uppercase;letter-spacing:.1em">Delta</div><div style="font-family:var(--display);font-size:36px;font-weight:900;color:var(--green)">↓ 34.7%</div><div style="font-size:12px;color:rgba(255,255,255,.4)">distance · same fleet · same service points</div></div></div></div></div>
+  </div>
+</div></section>
+
+<section class="section"><div class="container">
+  <div class="eyebrow">The problem</div><h2 style="font-family:var(--display);font-size:36px;font-weight:800;color:var(--navy);margin-bottom:8px">Why route decisions go wrong</h2>
+  <div class="ps-grid">
+    <div class="ps-item"><div class="ps-label pain">Current reality</div><div class="ps-list"><div class="ps-list-item pain-item">Route changes made on instinct — no way to test impact before going live</div><div class="ps-list-item pain-item">Task reassignments create knock-on delays across the whole week</div><div class="ps-list-item pain-item">No visibility into which routes are profitable and which are burning margin</div><div class="ps-list-item pain-item">Tender bids priced on experience, not on a simulated cost floor</div></div></div>
+    <div class="ps-item"><div class="ps-label solution">With Digital Twin</div><div class="ps-list"><div class="ps-list-item solution-item">Test any route change before pushing it live — see the full delta instantly</div><div class="ps-list-item solution-item">Move tasks between routes and days, see time and distance impact across all affected routes</div><div class="ps-list-item solution-item">Route profitability mapped: cost per km, utilization rate, dead-head km flagged</div><div class="ps-list-item solution-item">Simulate the service scope of any tender before submitting — know your cost floor</div></div></div>
+  </div>
+
+  <div style="margin-top:72px">
+    <div class="eyebrow">What the simulation enables</div>
+    <h2 style="font-family:var(--display);font-size:32px;font-weight:800;color:var(--navy);margin-bottom:32px">Four analyses that change how decisions are made</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div style="background:var(--bg2);border-radius:var(--radius-lg);padding:32px;border-left:4px solid var(--green)"><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--navy);margin-bottom:10px">Task Reassignment Delta</div><p style="font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:16px">Move any stop from one route or day to another. The simulation immediately shows how total distance and time change across every affected route — not just the two you touched. The aggregate delta appears before the change goes live.</p><div style="font-family:var(--mono);font-size:11px;color:var(--green-d);background:var(--green-lt);padding:8px 12px;border-radius:6px">→ Per-route delta · Weekly aggregate · Time & distance impact</div></div>
+      <div style="background:var(--bg2);border-radius:var(--radius-lg);padding:32px;border-left:4px solid var(--blue)"><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--navy);margin-bottom:10px">Route Profitability Analysis</div><p style="font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:16px">The Twin maps every route against its actual cost — fuel, driver time — and compares it to the revenue or contract value it generates. You see exactly which routes are profitable, which are breaking even, and which are running at a loss.</p><div style="font-family:var(--mono);font-size:11px;color:var(--blue);background:#EBF5FB;padding:8px 12px;border-radius:6px">→ Cost per km · Revenue per stop · Net margin per route</div></div>
+      <div style="background:var(--bg2);border-radius:var(--radius-lg);padding:32px;border-left:4px solid var(--amber)"><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--navy);margin-bottom:10px">Contract & Tender Pricing</div><p style="font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:16px">When tendering for a new service contract, the Twin answers the question every ops director asks: how low can we go and still be profitable? Input the proposed service area and frequency — the simulation calculates the operational cost baseline and minimum viable bid.</p><div style="font-family:var(--mono);font-size:11px;color:var(--amber);background:var(--amber-lt);padding:8px 12px;border-radius:6px">→ Minimum viable bid · Break-even km · OPEX floor</div></div>
+      <div style="background:var(--bg2);border-radius:var(--radius-lg);padding:32px;border-left:4px solid #7C3AED"><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--navy);margin-bottom:10px">Capacity Absorption Test</div><p style="font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:16px">Before buying a new vehicle, test whether your current fleet can absorb new service points through rebalancing. The Twin runs the absorption test and shows the utilization ceiling — often the answer is yes, saving the capital commitment entirely.</p><div style="font-family:var(--mono);font-size:11px;color:#6D28D9;background:#F5F3FF;padding:8px 12px;border-radius:6px">→ Utilization rate · Headroom per route · Absorption capacity</div></div>
+    </div>
+  </div>
+
+  <div style="margin-top:72px;background:var(--navy);border-radius:var(--radius-lg);padding:48px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start">
+    <div><div style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:16px">Built for two roles</div><div style="font-family:var(--display);font-size:26px;font-weight:800;color:white;margin-bottom:14px">Operations and finance work from the same simulation</div><p style="font-size:14px;color:rgba(255,255,255,.55);line-height:1.65">Operations managers test route changes in real time. CFOs and GMs model the financial impact of strategic decisions. Both roles work from the same simulation — eliminating the gap between operational planning and financial forecasting.</p></div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:18px 20px"><div style="font-family:var(--display);font-size:15px;font-weight:800;color:white;margin-bottom:4px">Operations Manager</div><div style="font-size:13px;color:rgba(255,255,255,.5)">Tests route changes, task reassignments, and schedule adjustments before pushing live</div></div>
+      <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:18px 20px"><div style="font-family:var(--display);font-size:15px;font-weight:800;color:white;margin-bottom:4px">CFO / General Manager</div><div style="font-size:13px;color:rgba(255,255,255,.5)">Models contract pricing, fleet investment ROI, and OPEX impact before any capital commitment</div></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- WASTE TOOL: Task Reassignment What-If -->
+<div class="tool-section" id="waste-tool"><div class="container">
+  <div class="tool-header">
+    <div class="eyebrow" style="justify-content:center">What-If Simulator</div>
+    <h2>New service point — what does it cost to add?</h2>
+    <p>A new customer wants service. Enter the details below. The simulation calculates the marginal operational cost of adding this stop — so you know your pricing floor before the conversation starts.</p>
+  </div>
+  <div class="tool-card">
+    <div class="tool-topbar"><div class="tool-dot"></div><span class="tool-tb-label">New customer onboarding — marginal cost simulation</span></div>
+    <div class="tool-body">
+      <div class="tool-inputs">
+        <div class="ti-field"><label class="ti-label">Current routes</label><input class="ti-input" type="number" id="wt-routes" value="6" min="1"><div class="ti-unit">active routes</div></div>
+        <div class="ti-field"><label class="ti-label">Avg route distance</label><input class="ti-input" type="number" id="wt-dist" value="85" min="10"><div class="ti-unit">km / route</div></div>
+        <div class="ti-field"><label class="ti-label">Stops per route</label><input class="ti-input" type="number" id="wt-stops" value="55" min="5"><div class="ti-unit">service points</div></div>
+        <div class="ti-field"><label class="ti-label">Distance from nearest service point</label><input class="ti-input" type="number" id="wt-detour" value="4.5" min="0.1" step="0.1"><div class="ti-unit">km</div></div>
+        <div class="ti-field"><label class="ti-label">Visits per week</label><input class="ti-input" type="number" id="wt-freq" value="3" min="1" max="7"><div class="ti-unit">visits</div></div>
+        <div class="ti-field"><label class="ti-label">Fuel cost</label><input class="ti-input" type="number" id="wt-fuel" value="1.85" step="0.01" min="0.5"><div class="ti-unit">€ / litre</div></div>
+      </div>
+      <button class="tool-run-btn" onclick="runWasteTool()">↗ Simulate adding this customer</button>
+      <div class="tool-results" id="waste-results">
+        <div class="tr-grid">
+          <div class="tr-card"><div class="tr-label">Added km / week</div><div class="tr-val" id="wtr-km">—</div><div class="tr-sub">detour × visits, both ways</div></div>
+          <div class="tr-card"><div class="tr-label">Added fuel cost / week</div><div class="tr-val" id="wtr-fuel">—</div><div class="tr-sub">marginal fuel only</div></div>
+          <div class="tr-card"><div class="tr-label">Driver time added / week</div><div class="tr-val" id="wtr-time">—</div><div class="tr-sub">at avg 25 km/h collection speed</div></div>
+        </div>
+        <div class="tr-total">
+          <div><div class="tr-total-label">Marginal cost / year</div><div class="tr-total-val" id="wtr-annual">—</div></div>
+          <div style="text-align:right"><div class="tr-total-label">Cost per visit</div><div class="tr-total-val" id="wtr-pervisit" style="font-size:28px">—</div></div>
+        </div>
+        <div class="tr-note">This is the marginal operational cost of adding this stop — fuel and driver time only. Use this as the minimum pricing floor: any service contract priced above this figure contributes positive margin. The Digital Twin calculates this precisely from your actual route network and stop locations.</div>
+        <div style="margin-top:16px;text-align:center"><button class="btn-green" onclick="openDemo()">See full contract pricing simulation →</button></div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<div class="uc-cta"><div class="container"><h2>Ready to test the What-If on your operation?</h2><p>A 20-minute demo shows what the simulation finds on a real operation at your fleet size.</p><div class="uc-cta-actions"><button class="btn-green" onclick="openDemo()">Request a demo →</button><button class="btn-outline" onclick="showPage('home')">Back to overview</button></div></div></div>
+<footer><div class="footer-inner"><div class="footer-brand"><svg width="90" height="16"><use href="#evreka-logo-white"/></svg><span class="footer-brand-name">Digital Twin</span></div><div class="footer-copy">© 2026 Evreka · evreka.co</div></div></footer>
+</div><!-- /page-waste -->
+
+<!-- ═══════════════════════ MUNICIPALITIES ═══════════════════════ -->
+<div id="page-municipalities" class="page">
+<section class="uc-hero"><div class="container">
+  <div class="uc-back" onclick="showPage('home')">← Back to overview</div>
+  <div class="uc-hero-grid">
+    <div>
+      <div class="uc-tag">🏛️ Municipalities & Public Authorities</div>
+      <h1 class="uc-title">Stop collecting containers that don't need it.</h1>
+      <p class="uc-subtitle">Not every container fills at the same rate. The Digital Twin analyses your collection data and identifies optimal visit frequencies — by zone, by container type — so you collect when needed, not by habit.</p>
+      <div class="uc-proof-row"><div class="upr-item"><div class="upr-num">Traffic-aware</div><div class="upr-label">Shift optimisation</div></div><div class="upr-item"><div class="upr-num">Data-backed</div><div class="upr-label">Budget justification</div></div></div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap"><button class="btn-green" onclick="openDemo()">Request a demo →</button><button class="btn-outline" onclick="document.getElementById('muni-tool').scrollIntoView({behavior:'smooth'})">Try the simulator ↓</button></div>
+    </div>
+    <div class="uc-visual-card"><div style="position:relative;z-index:1"><div style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:16px">Collection frequency optimisation</div><div style="display:flex;flex-direction:column;gap:8px"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><div style="background:rgba(255,255,255,.06);border-radius:6px;padding:12px;text-align:center"><div style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:6px">Zone A — Residential</div><div style="font-family:var(--display);font-size:18px;font-weight:700;color:rgba(255,255,255,.5)">Daily</div><div style="font-size:11px;color:rgba(255,255,255,.25);margin-top:4px">Current</div></div><div style="background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.25);border-radius:6px;padding:12px;text-align:center"><div style="font-family:var(--mono);font-size:9px;color:rgba(22,163,74,.5);text-transform:uppercase;margin-bottom:6px">Simulation</div><div style="font-family:var(--display);font-size:18px;font-weight:700;color:var(--green)">3×/week</div><div style="font-size:11px;color:rgba(22,163,74,.4);margin-top:4px">Optimal</div></div><div style="background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.25);border-radius:6px;padding:12px;text-align:center"><div style="font-family:var(--mono);font-size:9px;color:rgba(22,163,74,.5);text-transform:uppercase;margin-bottom:6px">Saving</div><div style="font-family:var(--display);font-size:18px;font-weight:700;color:var(--green)">↓ 40%</div><div style="font-size:11px;color:rgba(22,163,74,.4);margin-top:4px">visits</div></div></div><div style="background:rgba(255,255,255,.04);border-radius:8px;padding:12px;font-size:13px;color:rgba(255,255,255,.55);line-height:1.5">Containers in Zone A fill in 2.3 days on average. Daily collection wastes 30–40% of collection capacity. What-If: shift to 3× weekly → same service level, 40% fewer trips.</div></div></div></div>
+  </div>
+</div></section>
+
+<section class="section"><div class="container">
+  <div class="eyebrow">What the simulation answers</div>
+  <h2 style="font-family:var(--display);font-size:36px;font-weight:800;color:var(--navy);margin-bottom:32px">The decisions municipal operations teams need to make — before they go to leadership</h2>
+  <div style="display:flex;flex-direction:column;gap:2px;background:var(--border2);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:48px">
+    <div style="background:white;padding:28px 32px;display:flex;align-items:center;gap:20px"><div style="font-family:var(--mono);font-size:12px;color:var(--muted);min-width:28px">01</div><div style="font-family:var(--display);font-size:19px;font-weight:700;color:var(--navy);flex:1">"Which containers in Zone B don't need daily collection? What visit frequency actually matches their fill rate?"</div></div>
+    <div style="background:white;padding:28px 32px;display:flex;align-items:center;gap:20px"><div style="font-family:var(--mono);font-size:12px;color:var(--muted);min-width:28px">02</div><div style="font-family:var(--display);font-size:19px;font-weight:700;color:var(--navy);flex:1">"If we shift start times to 05:30, how much distance does the fleet recover from traffic — and does it affect service window compliance?"</div></div>
+    <div style="background:white;padding:28px 32px;display:flex;align-items:center;gap:20px"><div style="font-family:var(--mono);font-size:12px;color:var(--muted);min-width:28px">03</div><div style="font-family:var(--display);font-size:19px;font-weight:700;color:var(--navy);flex:1">"Reducing frequency in District 4 would save €4,200/week — but what's the service coverage impact? Can we present this to the committee with data?"</div></div>
+    <div style="background:white;padding:28px 32px;display:flex;align-items:center;gap:20px"><div style="font-family:var(--mono);font-size:12px;color:var(--muted);min-width:28px">04</div><div style="font-family:var(--display);font-size:19px;font-weight:700;color:var(--navy);flex:1">"How much CO₂ reduction does route optimisation deliver? Can we commit to a specific target in our sustainability report?"</div></div>
+  </div>
+
+  <div style="background:var(--navy);border-radius:var(--radius-lg);padding:40px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start">
+    <div><div style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.3);margin-bottom:16px">Scenario walkthrough</div><div style="font-family:var(--display);font-size:22px;font-weight:800;color:white;line-height:1.2;margin-bottom:14px">"The budget committee wants to know: what if we reduce collection frequency in Zone 4?"</div><p style="font-size:14px;color:rgba(255,255,255,.5);line-height:1.65">Without the Twin, this takes days of manual analysis and still produces estimates. With the Twin, the simulation runs in minutes and produces a side-by-side scenario comparison — service coverage delta, fleet cost saving, citizen impact, and emission change. The committee decides based on simulation output, not assumptions.</p></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:14px 16px"><div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:6px">Input</div><div style="font-size:13px;color:rgba(255,255,255,.7)">Zone 4: 8 routes, 340 service points, 2× / week frequency</div></div>
+      <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:14px 16px"><div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:6px">What-If</div><div style="font-size:13px;color:rgba(255,255,255,.7)">Reduce to 1× / week. Simulation calculates fleet load rebalancing and coverage impact</div></div>
+      <div style="background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.25);border-radius:8px;padding:14px 16px"><div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:rgba(22,163,74,.6);margin-bottom:6px">Simulation output</div><div style="font-size:13px;color:rgba(255,255,255,.8)">€4,200/week saving · 12% service coverage reduction · 2 routes freed for reallocation</div></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- MUNI TOOL: Container Frequency Optimiser -->
+<div class="tool-section" id="muni-tool"><div class="container">
+  <div class="tool-header">
+    <div class="eyebrow" style="justify-content:center">What-If Simulator</div>
+    <h2>Collection frequency analysis — accept or reject suggestions</h2>
+    <p>The simulation has analysed 8 service points in your zone and identified over-collection on some. Review each suggestion — accept or reject — then run the What-If to see the combined impact on visits, distance, and cost.</p>
+  </div>
+  <div class="tool-card">
+    <div class="tool-topbar">
+      <div class="tool-dot"></div>
+      <span class="tool-tb-label">Zone frequency optimisation — What-If</span>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <span style="font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.4)">Fuel: €</span>
+        <input type="number" id="mt-fuel" value="1.85" step="0.01" min="0.5" style="width:52px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:4px;color:white;font-family:var(--mono);font-size:11px;padding:3px 6px;outline:none">
+        <span style="font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.4)">/L</span>
+      </div>
+    </div>
+    <div class="tool-body" style="padding:0">
+      <!-- Service points list -->
+      <div id="muni-sp-list" style="border-bottom:1px solid var(--border2)"></div>
+      <!-- Run button -->
+      <div style="padding:16px 20px;background:var(--bg)">
+        <button class="tool-run-btn" style="margin-bottom:0" onclick="runMuniTool()">↗ Apply selected changes and run simulation</button>
+      </div>
+      <div class="tool-results" id="muni-results" style="padding:0 20px 20px">
+        <div id="muni-summary-bar" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;background:var(--border2);border-radius:10px;overflow:hidden;margin-bottom:14px"></div>
+        <div class="tr-total">
+          <div><div class="tr-total-label">Annual fuel cost saving</div><div class="tr-total-val" id="mtr-annual">—</div></div>
+          <div style="text-align:right"><div class="tr-total-label">Visits saved / week</div><div class="tr-total-val" id="mtr-visits" style="font-size:32px">—</div></div>
+        </div>
+        <div class="tr-note" id="muni-note">—</div>
+        <div style="margin-top:16px;text-align:center"><button class="btn-green" onclick="openDemo()">See full zone-level frequency analysis →</button></div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<div class="uc-cta"><div class="container"><h2>Present the simulation, not the proposal.</h2><p>A 20-minute demo shows how municipal teams use the Digital Twin to back every schedule decision with data.</p><div class="uc-cta-actions"><button class="btn-green" onclick="openDemo()">Request a demo →</button><button class="btn-outline" onclick="showPage('home')">Back to overview</button></div></div></div>
+<footer><div class="footer-inner"><div class="footer-brand"><svg width="90" height="16"><use href="#evreka-logo-white"/></svg><span class="footer-brand-name">Digital Twin</span></div><div class="footer-copy">© 2026 Evreka · evreka.co</div></div></footer>
+</div><!-- /page-municipalities -->
+
+<!-- ═══════════════════════ ESG ═══════════════════════ -->
+<div id="page-esg" class="page">
+<section class="uc-hero"><div class="container">
+  <div class="uc-back" onclick="showPage('home')">← Back to overview</div>
+  <div class="uc-hero-grid">
+    <div>
+      <div class="uc-tag">🌍 ESG & Sustainability</div>
+      <h1 class="uc-title">Simulate the carbon saving before you report it.</h1>
+      <p class="uc-subtitle">Compare two route configurations — current vs. optimised — and see the CO₂ and fuel delta tied to specific operational decisions. Not an estimate. A simulated outcome.</p>
+      <div class="uc-proof-row"><div class="upr-item"><div class="upr-num">Verified</div><div class="upr-label">CO₂ projections</div></div><div class="upr-item"><div class="upr-num">Dual</div><div class="upr-label">Cost + emission output</div></div></div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap"><button class="btn-green" onclick="openDemo()">Request a demo →</button><button class="btn-outline" onclick="document.getElementById('esg-tool').scrollIntoView({behavior:'smooth'})">Try the CO₂ simulator ↓</button></div>
+    </div>
+    <div class="uc-visual-card"><div style="position:relative;z-index:1"><div style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:16px">Dual What-If — cost + emissions</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div style="background:rgba(255,255,255,.06);border-radius:8px;padding:14px;text-align:center"><div style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:8px">Cost saving</div><div style="font-family:var(--display);font-size:32px;font-weight:900;color:var(--green)">↓ 35%</div><div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:4px">fuel + driver cost</div></div><div style="background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:14px;text-align:center"><div style="font-family:var(--mono);font-size:9px;color:rgba(22,163,74,.5);text-transform:uppercase;margin-bottom:8px">CO₂ avoided</div><div style="font-family:var(--display);font-size:32px;font-weight:900;color:var(--green)">↓ 34%</div><div style="font-size:11px;color:rgba(22,163,74,.4);margin-top:4px">kg per week (est.)</div></div></div><div style="background:rgba(255,255,255,.04);border-radius:8px;padding:14px;text-align:center;margin-top:10px"><div style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.5">The most profitable route configuration is also the lowest-emission one. The simulation proves it.</div></div></div></div>
+  </div>
+</div></section>
+
+<section class="section"><div class="container">
+  <div class="eyebrow">The credibility gap</div>
+  <h2 style="font-family:var(--display);font-size:36px;font-weight:800;color:var(--navy);margin-bottom:16px">Why ESG commitments without simulation data are a liability</h2>
+  <p style="font-size:16px;color:var(--muted);max-width:620px;line-height:1.65;margin-bottom:48px">Most carbon reduction commitments in logistics and waste operations are built on projected figures — not simulated outcomes tied to specific operational decisions. When stakeholders, regulators, or auditors ask "how did you arrive at this number?", estimates don't hold up. Simulation data does.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:48px">
+    <div style="background:var(--bg2);border-radius:var(--radius-lg);padding:32px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><div style="width:40px;height:40px;background:var(--green-lt);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📉</div><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--navy)">CO₂ Delta Before You Report It</div></div><p style="font-size:14px;color:var(--muted);line-height:1.65">Run the optimised route configuration in the Twin. The simulation calculates the fuel delta, converts it to a CO₂ figure using verified emission factors. You get a projected carbon reduction tied to specific route decisions — not a top-down estimate tied to a target.</p></div>
+    <div style="background:var(--bg2);border-radius:var(--radius-lg);padding:32px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><div style="width:40px;height:40px;background:var(--amber-lt);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">⚖️</div><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--navy)">The Dual Optimisation Proof</div></div><p style="font-size:14px;color:var(--muted);line-height:1.65">The most common executive objection to ESG investment: "it costs more to be green." The Digital Twin runs the What-If that disproves this. Optimise for efficiency and emissions simultaneously — and the simulation shows they're often the same decision.</p></div>
+    <div style="background:var(--bg2);border-radius:var(--radius-lg);padding:32px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><div style="width:40px;height:40px;background:#EDE9FE;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📋</div><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--navy)">CSRD & EPR Reporting Support</div></div><p style="font-size:14px;color:var(--muted);line-height:1.65">For organisations under CSRD obligation or EPR frameworks, the Digital Twin provides simulation-backed data that supports Scope 1 emission reporting. Route decisions are linked to emission outcomes — creating an auditable trail from operational change to carbon impact.</p></div>
+    <div style="background:var(--bg2);border-radius:var(--radius-lg);padding:32px"><div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><div style="width:40px;height:40px;background:#FEE2E2;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🎯</div><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--navy)">Target-Setting With Evidence</div></div><p style="font-size:14px;color:var(--muted);line-height:1.65">Before committing to a carbon reduction target, simulate it. The Twin shows what operational changes would be required to hit a specific CO₂ figure — so targets are grounded in what your fleet can actually achieve, not what looks good in a report.</p></div>
+  </div>
+</div></section>
+
+<!-- ESG TOOL: Route Config Carbon Comparison -->
+<div class="tool-section" id="esg-tool"><div class="container">
+  <div class="tool-header">
+    <div class="eyebrow" style="justify-content:center">What-If Simulator</div>
+    <h2>Two route configurations. One simulation. Which is better?</h2>
+    <p>Enter your current routing parameters, then change one variable — fewer routes, shorter distances, different frequency — and see both the financial and CO₂ delta side by side.</p>
+  </div>
+  <div class="tool-card">
+    <div class="tool-topbar"><div class="tool-dot"></div><span class="tool-tb-label">Route configuration comparison — cost & CO₂ What-If</span></div>
+    <div class="tool-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:20px">
+        <div>
+          <div style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px;padding:8px 12px;background:var(--bg2);border-radius:6px">Config A — Current</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="ti-field"><label class="ti-label">Fleet size</label><input class="ti-input" type="number" id="ea-fleet" value="20" min="1"><div class="ti-unit">vehicles</div></div>
+            <div class="ti-field"><label class="ti-label">Weekly km / vehicle</label><input class="ti-input" type="number" id="ea-km" value="750" min="50"><div class="ti-unit">km / week</div></div>
+            <div class="ti-field"><label class="ti-label">Fuel consumption</label><input class="ti-input" type="number" id="ea-rate" value="28" min="10"><div class="ti-unit">L / 100km</div></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--green-d);margin-bottom:12px;padding:8px 12px;background:var(--green-lt);border-radius:6px">Config B — What-If (optimised)</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="ti-field"><label class="ti-label">Fleet size</label><input class="ti-input" type="number" id="eb-fleet" value="20" min="1"><div class="ti-unit">vehicles</div></div>
+            <div class="ti-field"><label class="ti-label">Weekly km / vehicle</label><input class="ti-input" type="number" id="eb-km" value="490" min="50"><div class="ti-unit">km / week</div></div>
+            <div class="ti-field"><label class="ti-label">Fuel consumption</label><input class="ti-input" type="number" id="eb-rate" value="28" min="10"><div class="ti-unit">L / 100km</div></div>
+          </div>
+        </div>
+      </div>
+      <button class="tool-run-btn" onclick="runESGTool()">↗ Compare configurations</button>
+      <div class="tool-results" id="esg-results">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+          <div style="background:var(--bg2);border-radius:10px;padding:18px"><div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px">Config A — Current</div><div style="font-family:var(--display);font-size:28px;font-weight:800;color:rgba(13,33,55,.5)" id="ea-co2-disp">—</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">kg CO₂ / week</div><div style="font-family:var(--display);font-size:22px;font-weight:700;color:rgba(13,33,55,.4);margin-top:6px" id="ea-cost-disp">—</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">fuel cost / week</div></div>
+          <div style="background:var(--green-lt);border:1px solid rgba(22,163,74,.2);border-radius:10px;padding:18px"><div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--green-d);margin-bottom:8px">Config B — What-If</div><div style="font-family:var(--display);font-size:28px;font-weight:800;color:var(--navy)" id="eb-co2-disp">—</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">kg CO₂ / week</div><div style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--navy);margin-top:6px" id="eb-cost-disp">—</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted)">fuel cost / week</div></div>
+        </div>
+        <div class="tr-total">
+          <div><div class="tr-total-label">Annual CO₂ avoided</div><div class="tr-total-val" id="etr-co2">—</div></div>
+          <div style="text-align:right"><div class="tr-total-label">Annual fuel saving</div><div class="tr-total-val" id="etr-cost" style="font-size:32px">—</div></div>
+        </div>
+        <div style="margin-top:12px;background:var(--amber-lt);border:1px solid rgba(180,83,9,.15);border-radius:10px;padding:14px;text-align:center"><div style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);margin-bottom:4px">ESG note</div><div style="font-size:13px;color:#78350F;line-height:1.5">CO₂ calculated at 2.63 kg per litre diesel (standard Scope 1 factor). The Digital Twin generates verified outputs tied to specific route decisions for formal ESG reporting.</div></div>
+        <div style="margin-top:16px;text-align:center"><button class="btn-green" onclick="openDemo()">Request your impact report →</button></div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<div class="uc-cta"><div class="container"><h2>Prove the impact before you report it.</h2><p>The Digital Twin generates simulation-backed ESG data tied to specific operational decisions.</p><div class="uc-cta-actions"><button class="btn-green" onclick="openDemo()">Request a demo →</button><button class="btn-outline" onclick="showPage('home')">Back to overview</button></div></div></div>
+<footer><div class="footer-inner"><div class="footer-brand"><svg width="90" height="16"><use href="#evreka-logo-white"/></svg><span class="footer-brand-name">Digital Twin</span></div><div class="footer-copy">© 2026 Evreka · evreka.co</div></div></footer>
+</div><!-- /page-esg -->
+
+<!-- ═══════════════════════ FLEET GROWTH ═══════════════════════ -->
+<div id="page-fleet" class="page">
+<section class="uc-hero"><div class="container">
+  <div class="uc-back" onclick="showPage('home')">← Back to overview</div>
+  <div class="uc-hero-grid">
+    <div>
+      <div class="uc-tag">🚛 Fleet Growth</div>
+      <h1 class="uc-title">Add a vehicle. Remove one. Test first.</h1>
+      <p class="uc-subtitle">Before any fleet acquisition or reduction, run the What-If. See projected utilization, capacity headroom, and payback period — or discover that your current fleet can absorb more than you thought.</p>
+      <div class="uc-proof-row"><div class="upr-item"><div class="upr-num">ROI</div><div class="upr-label">Before signing</div></div><div class="upr-item"><div class="upr-num">Zero</div><div class="upr-label">Guesswork</div></div></div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap"><button class="btn-green" onclick="openDemo()">Request a demo →</button><button class="btn-outline" onclick="document.getElementById('fleet-tool').scrollIntoView({behavior:'smooth'})">Try the simulator ↓</button></div>
+    </div>
+    <div class="uc-visual-card"><div style="position:relative;z-index:1"><div style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:16px">Fleet sizing — What-If simulation</div><div style="display:flex;flex-direction:column;gap:10px"><div style="background:rgba(255,255,255,.06);border-radius:8px;padding:14px"><div style="font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em">Scenario: Add 2 vehicles to fleet of 12</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><div style="font-size:11px;color:rgba(255,255,255,.3)">Current utilisation</div><div style="font-family:var(--display);font-size:26px;font-weight:700;color:rgba(255,255,255,.5)">67%</div></div><div><div style="font-size:11px;color:rgba(22,163,74,.6)">Projected</div><div style="font-family:var(--display);font-size:26px;font-weight:700;color:var(--green)">84%</div></div></div></div><div style="background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:14px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-family:var(--mono);font-size:9px;color:rgba(22,163,74,.5);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Payback period</div><div style="font-family:var(--display);font-size:28px;font-weight:800;color:var(--green)">14 months</div></div><div style="text-align:right"><div style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Verdict</div><div style="font-size:14px;color:var(--green);font-weight:600">✓ Viable</div></div></div></div></div></div>
+  </div>
+</div></section>
+
+<section class="section"><div class="container">
+  <div class="eyebrow">Four fleet decisions the simulation answers</div>
+  <h2 style="font-family:var(--display);font-size:32px;font-weight:800;color:var(--navy);margin-bottom:32px">Every expansion decision is a hypothesis. The Twin tests it first.</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:48px">
+    <div style="border:1.5px solid var(--border2);border-radius:var(--radius-lg);padding:32px;background:white"><div style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:12px">What-If 01</div><div style="font-family:var(--display);font-size:20px;font-weight:800;color:var(--navy);margin-bottom:10px">Vehicle ROI Before Purchase</div><p style="font-size:14px;color:var(--muted);line-height:1.65">Assign a proposed vehicle to a service zone in the Twin and simulate 52 weeks. Output: projected utilization rate, weekly revenue contribution, operating cost per km, estimated payback period. The boardroom sees a simulation, not a forecast.</p></div>
+    <div style="border:1.5px solid var(--border2);border-radius:var(--radius-lg);padding:32px;background:white"><div style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:12px">What-If 02</div><div style="font-family:var(--display);font-size:20px;font-weight:800;color:var(--navy);margin-bottom:10px">Fleet Reduction Test</div><p style="font-size:14px;color:var(--muted);line-height:1.65">What if you removed one vehicle? The Twin runs the rebalancing simulation — redistributes its routes to the remaining fleet and shows the utilization impact. Often the result is manageable. Saves the capital cost.</p></div>
+    <div style="border:1.5px solid var(--border2);border-radius:var(--radius-lg);padding:32px;background:white"><div style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:12px">What-If 03</div><div style="font-family:var(--display);font-size:20px;font-weight:800;color:var(--navy);margin-bottom:10px">Service Zone Feasibility</div><p style="font-size:14px;color:var(--muted);line-height:1.65">Before signing a new service area contract, simulate it. Map the service points, assign routes, stress-test the fleet. The Twin tells you the minimum vehicle and driver count to make the zone viable — before you hire or commit.</p></div>
+    <div style="border:1.5px solid var(--border2);border-radius:var(--radius-lg);padding:32px;background:white"><div style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:12px">What-If 04</div><div style="font-family:var(--display);font-size:20px;font-weight:800;color:var(--navy);margin-bottom:10px">Tender Pricing Floor</div><p style="font-size:14px;color:var(--muted);line-height:1.65">When bidding on a new contract, the Twin calculates your operational cost floor for the proposed service scope. You know the minimum viable price before you submit — bid competitively without cutting your margin.</p></div>
+  </div>
+</div></section>
+
+<!-- FLEET TOOL: Fleet Sizing What-If -->
+<div class="tool-section" id="fleet-tool"><div class="container">
+  <div class="tool-header">
+    <div class="eyebrow" style="justify-content:center">What-If Simulator</div>
+    <h2>Ask the question. The simulation runs the analysis.</h2>
+    <p>Define your current operation and the decision you're weighing. The simulation tests capacity, utilisation, and financial viability — step by step.</p>
+  </div>
+  <div class="tool-card">
+    <div class="tool-topbar"><div class="tool-dot"></div><span class="tool-tb-label">Fleet sizing — capacity & ROI What-If</span></div>
+    <div class="tool-body">
+
+      <!-- Step 1: Current operation -->
+      <div class="ft-step">
+        <div class="ft-step-label"><span class="ft-step-num">01</span> Your current operation</div>
+        <div class="tool-inputs" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="ti-field"><label class="ti-label">Fleet size</label><input class="ti-input" type="number" id="ft-current" value="12" min="1"><div class="ti-unit">vehicles</div></div>
+          <div class="ti-field"><label class="ti-label">Avg weekly km / vehicle</label><input class="ti-input" type="number" id="ft-km" value="800" min="50"><div class="ti-unit">km / week</div></div>
+          <div class="ti-field"><label class="ti-label">Revenue per km</label><input class="ti-input" type="number" id="ft-rev" value="1.20" step="0.01" min="0.1"><div class="ti-unit">€ / km</div></div>
+        </div>
+      </div>
+
+      <!-- Step 2: The decision -->
+      <div class="ft-step" style="border-top:1px solid var(--border2)">
+        <div class="ft-step-label"><span class="ft-step-num">02</span> What are you considering?</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+          <button class="ft-scenario-btn active" id="fts-add" onclick="setFleetScenario('add')">➕ Add vehicles</button>
+          <button class="ft-scenario-btn" id="fts-remove" onclick="setFleetScenario('remove')">➖ Remove a vehicle</button>
+          <button class="ft-scenario-btn" id="fts-absorb" onclick="setFleetScenario('absorb')">🔄 Can current fleet absorb more?</button>
+        </div>
+        <div id="ft-scenario-inputs"></div>
+      </div>
+
+      <button class="tool-run-btn" onclick="runFleetTool()">↗ Run the What-If simulation</button>
+
+      <!-- Results: step-by-step analysis -->
+      <div class="tool-results" id="fleet-results">
+        <div id="ft-analysis-steps" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px"></div>
+        <div class="tr-total" id="ft-final-verdict" style="display:none">
+          <div><div class="tr-total-label" id="ft-verdict-label">—</div><div class="tr-total-val" id="ftr-payback">—</div></div>
+          <div style="text-align:right"><div class="tr-total-label">Recommendation</div><div class="tr-total-val" id="ftr-verdict" style="font-size:22px">—</div></div>
+        </div>
+        <div style="margin-top:16px;text-align:center"><button class="btn-green" onclick="openDemo()">See the full capacity simulation on your real data →</button></div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<div class="uc-cta"><div class="container"><h2>Strategic growth without the guesswork.</h2><p>A 20-minute demo shows how the Digital Twin models fleet decisions on your actual operational data.</p><div class="uc-cta-actions"><button class="btn-green" onclick="openDemo()">Request a demo →</button><button class="btn-outline" onclick="showPage('home')">Back to overview</button></div></div></div>
+<footer><div class="footer-inner"><div class="footer-brand"><svg width="90" height="16"><use href="#evreka-logo-white"/></svg><span class="footer-brand-name">Digital Twin</span></div><div class="footer-copy">© 2026 Evreka · evreka.co</div></div></footer>
+</div><!-- /page-fleet -->
+
+<!-- ═══════════════════════ LOGISTICS ═══════════════════════ -->
+<div id="page-logistics" class="page">
+<section class="uc-hero"><div class="container">
+  <div class="uc-back" onclick="showPage('home')">← Back to overview</div>
+  <div class="uc-hero-grid">
+    <div>
+      <div class="uc-tag">📦 Logistics & Distribution</div>
+      <h1 class="uc-title">Every shipment assignment is a decision.<br>Test it first.</h1>
+      <p class="uc-subtitle">Before dispatching, simulate shipment consolidation, load rebalancing, and stop resequencing. See the distance, time, and cost delta — and whether delivery windows are preserved.</p>
+      <div class="uc-proof-row"><div class="upr-item"><div class="upr-num">~38%</div><div class="upr-label">Return km recoverable</div></div><div class="upr-item"><div class="upr-num">Zero</div><div class="upr-label">Window breaches in simulation</div></div></div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap"><button class="btn-green" onclick="openDemo()">Request a demo →</button><button class="btn-outline" onclick="document.getElementById('log-tool').scrollIntoView({behavior:'smooth'})">Try the simulator ↓</button></div>
+    </div>
+    <div class="uc-visual-card"><div style="position:relative;z-index:1"><div style="font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:16px">Shipment consolidation — What-If</div><div style="display:flex;flex-direction:column;gap:10px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="background:rgba(255,255,255,.06);border-radius:8px;padding:14px"><div style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:8px">Current dispatch</div><div style="font-family:var(--display);font-size:22px;font-weight:700;color:rgba(255,255,255,.4)">540 km/day</div><div style="font-size:11px;color:rgba(255,255,255,.25);margin-top:4px">↳ 90 km empty return</div></div><div style="background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.2);border-radius:8px;padding:14px"><div style="font-size:11px;color:rgba(22,163,74,.5);margin-bottom:8px">What-If consolidated</div><div style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--green)">335 km/day</div><div style="font-size:11px;color:rgba(22,163,74,.4);margin-top:4px">↳ ~38% return km saved</div></div></div><div style="background:rgba(255,255,255,.04);border-radius:8px;padding:12px;text-align:center"><span style="font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.4)">Every return km is a decision. The Twin helps you make it right.</span></div></div></div></div>
+  </div>
+</div></section>
+
+<section class="section"><div class="container">
+  <div class="eyebrow">What the simulation answers</div>
+  <h2 style="font-family:var(--display);font-size:32px;font-weight:800;color:var(--navy);margin-bottom:32px">Three decisions — one What-If engine</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:48px">
+    <div style="background:var(--bg2);border-radius:var(--radius-lg);padding:28px"><div style="font-size:28px;margin-bottom:14px">🔄</div><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--navy);margin-bottom:10px">Shipment Consolidation</div><p style="font-size:14px;color:var(--muted);line-height:1.65">Should these two delivery runs be merged into one? The simulation tests consolidation scenarios and shows the distance and time delta — while checking whether any delivery windows would be breached.</p></div>
+    <div style="background:var(--bg2);border-radius:var(--radius-lg);padding:28px"><div style="font-size:28px;margin-bottom:14px">📍</div><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--navy);margin-bottom:10px">Stop Sequence What-If</div><p style="font-size:14px;color:var(--muted);line-height:1.65">The order in which stops are visited has a measurable distance impact. The Twin tests alternative sequences and finds the shortest path — respecting delivery time windows and vehicle capacity.</p></div>
+    <div style="background:var(--bg2);border-radius:var(--radius-lg);padding:28px"><div style="font-size:28px;margin-bottom:14px">🚛</div><div style="font-family:var(--display);font-size:18px;font-weight:800;color:var(--navy);margin-bottom:10px">Vehicle Assignment What-If</div><p style="font-size:14px;color:var(--muted);line-height:1.65">Which vehicle should handle this shipment? The simulation tests assignment options — accounting for current load, location, and time constraints — and shows the total cost impact of each choice before dispatch.</p></div>
+  </div>
+
+  <div style="background:var(--navy);border-radius:var(--radius-lg);padding:40px">
+    <div style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.3);margin-bottom:16px">Scenario example</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start">
+      <div><div style="font-family:var(--display);font-size:22px;font-weight:800;color:white;line-height:1.2;margin-bottom:14px">"We run 6 vehicles daily. Every return leg is empty. What does the simulation find?"</div><p style="font-size:14px;color:rgba(255,255,255,.5);line-height:1.65;margin-bottom:16px">A distribution operation running 6 vehicles per day with 90km average return legs ran the consolidation and sequencing What-If against their actual delivery network.</p><p style="font-size:14px;color:rgba(255,255,255,.5);line-height:1.65">The simulation identified ~38% of return distance as recoverable through route consolidation and sequencing changes — without impacting any delivery windows.</p></div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:14px 16px"><div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:6px">Current</div><div style="font-family:var(--display);font-size:22px;font-weight:700;color:rgba(255,255,255,.5)">540 km/day return</div><div style="font-size:12px;color:rgba(255,255,255,.3);margin-top:2px">6 vehicles × 90km empty return</div></div>
+        <div style="background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.25);border-radius:8px;padding:14px 16px"><div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:rgba(22,163,74,.6);margin-bottom:6px">What-If simulation</div><div style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--green)">335 km/day return</div><div style="font-size:12px;color:rgba(22,163,74,.5);margin-top:2px">↓ ~38% · same delivery windows</div></div>
+        <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:14px 16px;text-align:center"><div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:4px">Annual fuel saving estimate</div><div style="font-family:var(--display);font-size:28px;font-weight:800;color:var(--green)">€18,000+</div><div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px">6-vehicle operation · fuel cost only</div></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- LOGISTICS TOOL: Shipment Scenario Builder -->
+<div class="tool-section" id="log-tool"><div class="container">
+  <div class="tool-header">
+    <div class="eyebrow" style="justify-content:center">What-If Simulator</div>
+    <h2>Consolidate two runs — does it work?</h2>
+    <p>Enter the parameters of two separate delivery runs. The simulation checks whether consolidating them saves distance and cost — and whether time windows are preserved.</p>
+  </div>
+  <div class="tool-card">
+    <div class="tool-topbar"><div class="tool-dot"></div><span class="tool-tb-label">Shipment consolidation — What-If</span></div>
+    <div class="tool-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:20px">
+        <div>
+          <div style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px;padding:8px 12px;background:var(--bg2);border-radius:6px">Run A</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="ti-field"><label class="ti-label">Distance</label><input class="ti-input" type="number" id="la-dist" value="120" min="10"><div class="ti-unit">km outbound</div></div>
+            <div class="ti-field"><label class="ti-label">Stops</label><input class="ti-input" type="number" id="la-stops" value="8" min="1"><div class="ti-unit">delivery points</div></div>
+            <div class="ti-field"><label class="ti-label">Return (empty)</label><input class="ti-input" type="number" id="la-ret" value="90" min="0"><div class="ti-unit">km</div></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px;padding:8px 12px;background:var(--bg2);border-radius:6px">Run B</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="ti-field"><label class="ti-label">Distance</label><input class="ti-input" type="number" id="lb-dist" value="95" min="10"><div class="ti-unit">km outbound</div></div>
+            <div class="ti-field"><label class="ti-label">Stops</label><input class="ti-input" type="number" id="lb-stops" value="6" min="1"><div class="ti-unit">delivery points</div></div>
+            <div class="ti-field"><label class="ti-label">Return (empty)</label><input class="ti-input" type="number" id="lb-ret" value="75" min="0"><div class="ti-unit">km</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="tool-inputs" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="ti-field"><label class="ti-label">Vehicle capacity</label><input class="ti-input" type="number" id="lc-cap" value="20" min="1"><div class="ti-unit">load units</div></div>
+        <div class="ti-field"><label class="ti-label">Avg load per stop</label><input class="ti-input" type="number" id="lc-load" value="1.2" step="0.1" min="0.1"><div class="ti-unit">load units</div></div>
+        <div class="ti-field"><label class="ti-label">Fuel cost</label><input class="ti-input" type="number" id="lc-fuel" value="1.85" step="0.01"><div class="ti-unit">€ / litre</div></div>
+      </div>
+      <button class="tool-run-btn" onclick="runLogTool()">↗ Simulate consolidation</button>
+      <div class="tool-results" id="log-results">
+        <div id="log-feasibility" style="border-radius:10px;padding:16px;margin-bottom:16px;font-size:14px;line-height:1.5"></div>
+        <div class="tr-grid">
+          <div class="tr-card"><div class="tr-label">Distance saved</div><div class="tr-val" id="ltr-dist">—</div><div class="tr-sub">vs. running separately</div></div>
+          <div class="tr-card"><div class="tr-label">Return km eliminated</div><div class="tr-val" id="ltr-ret">—</div><div class="tr-sub">one fewer empty return</div></div>
+          <div class="tr-card"><div class="tr-label">Fuel saved</div><div class="tr-val" id="ltr-fuel">—</div><div class="ti-unit" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px">per run pair</div></div>
+        </div>
+        <div class="tr-total">
+          <div><div class="tr-total-label">Annual saving (if daily)</div><div class="tr-total-val" id="ltr-annual">—</div></div>
+          <div style="text-align:right"><div class="tr-total-label">Total km reduction</div><div class="tr-total-val" id="ltr-pct" style="font-size:28px">—</div></div>
+        </div>
+        <div class="tr-note">Feasibility is based on combined stop count vs. vehicle capacity. The Digital Twin validates consolidation against real time windows, vehicle capacity, and route geography for precise results.</div>
+        <div style="margin-top:16px;text-align:center"><button class="btn-green" onclick="openDemo()">See full shipment optimisation simulation →</button></div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<div class="uc-cta"><div class="container"><h2>Stop leaving money on the return trip.</h2><p>A 20-minute demo shows how the Digital Twin finds consolidation and optimisation opportunities on your actual dispatch data.</p><div class="uc-cta-actions"><button class="btn-green" onclick="openDemo()">Request a demo →</button><button class="btn-outline" onclick="showPage('home')">Back to overview</button></div></div></div>
+<footer><div class="footer-inner"><div class="footer-brand"><svg width="90" height="16"><use href="#evreka-logo-white"/></svg><span class="footer-brand-name">Digital Twin</span></div><div class="footer-copy">© 2026 Evreka · evreka.co</div></div></footer>
+</div><!-- /page-logistics -->
+
+<script>
+// ── Page routing ──────────────────────────────────────────────────────────
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+  const a=document.querySelector(`.nav-link[onclick*="'${id}'"]`);
+  if(a)a.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(initReveal,100);
+}
+function openDemo(){window.open('https://form.jotform.com/252943339505966','_blank')}
+function setText(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
+function setHTML(id,val){const el=document.getElementById(id);if(el)el.innerHTML=val;}
+function showEl(id,show){const el=document.getElementById(id);if(el)el.style.display=show?'':'none';}
+function addClass(id,cls){const el=document.getElementById(id);if(el)el.classList.add(cls);}
+function setClass(id,cls){const el=document.getElementById(id);if(el)el.className=cls;}
+function submitDemo(){
+  const name=document.getElementById('df-name').value.trim();
+  const email=document.getElementById('df-email').value.trim();
+  const company=document.getElementById('df-company').value.trim();
+  if(!name||!email||!company){alert('Please fill in your name, email, and company.');return;}
+  window.open('https://form.jotform.com/252943339505966','_blank');
+}
+
+// ── Ticker ────────────────────────────────────────────────────────────────
+(function(){
+  const items=[
+    {a:'move Monday\'s task to Tuesday?'},{a:'shift start time 90 minutes earlier?'},
+    {a:'add one vehicle to the fleet?'},{a:'consolidate these two delivery runs?'},
+    {a:'reduce collection frequency in Zone B?'},{a:'take on this new service contract?'},
+    {a:'price this tender differently?'},{a:'remove a container from this route?'},
+  ];
+  const track=document.getElementById('tickerTrack');
+  const render=()=>items.map(i=>`<div class="ticker-item"><span class="ticker-dot"></span>What if you… <span class="ti-accent">${i.a}</span></div>`).join('');
+  track.innerHTML=render()+render();
+})();
+
+// ── Hero What-If Autoplay ─────────────────────────────────────────────────────
+const HWC_DAYS = ['Mon','Tue','Wed','Thu','Fri'];
+const HWC_BASE_KM = [121.7, 123.8, 121.2, 123.1, 116.2];
+const HWC_BASE_TOTAL = HWC_BASE_KM.reduce((a,b)=>a+b,0); // 605.0
+
+const HWC_BASE_TASKS = {
+  Mon:[{id:'hm1',icon:'🏭',name:'Industrial Zone',km:26},
+       {id:'hm2',icon:'🏥',name:'Hospital Dist.',km:19},
+       {id:'hm3',icon:'🏘️',name:'Residential A',km:44}],
+  Tue:[{id:'ht1',icon:'🛒',name:'Central Market',km:31},
+       {id:'ht2',icon:'🏢',name:'Office Park',km:28},
+       {id:'ht3',icon:'⚓',name:'Port Area',km:38}],
+  Wed:[{id:'hw1',icon:'🎓',name:'University',km:29},
+       {id:'hw2',icon:'🏛️',name:'Gov. Buildings',km:18},
+       {id:'hw3',icon:'✈️',name:'Airport Zone',km:42}],
+  Thu:[{id:'hth1',icon:'💻',name:'Tech Park',km:33},
+       {id:'hth2',icon:'🛍️',name:'Retail Strip',km:22},
+       {id:'hth3',icon:'📦',name:'Warehouses',km:40}],
+  Fri:[{id:'hf1',icon:'🏖️',name:'Marina Dist.',km:28},
+       {id:'hf2',icon:'🏭',name:'Food Factory',km:30},
+       {id:'hf3',icon:'🏘️',name:'Residential B',km:36}]
+};
+
+// Scenarios: each moves a task from one day to another
+// delta = new total - base total
+const HWC_SCENARIOS = [
+  {
+    label: 'What if Port Area moved from Tuesday to Wednesday?',
+    from: 'Tue', taskId: 'ht3', to: 'Wed',
+    // Tue loses 38km (but routes overlap more), Wed gains ~32km effective (shorter)
+    deltaKm: -14,
+    verdict: 'better',
+    verdictText: '✓ Moving Port Area to Wednesday saves 14 km — Wednesday routes have better geographic overlap. This change would be applied to the live plan.'
+  },
+  {
+    label: 'What if Hospital Dist. moved from Monday to Thursday?',
+    from: 'Mon', taskId: 'hm2', to: 'Thu',
+    // Mon already dense, Thu has headroom but longer detour
+    deltaKm: +11,
+    verdict: 'worse',
+    verdictText: '⚠ Moving Hospital Dist. to Thursday adds 11 km — Thursday routes travel further from this zone. The simulation flags it before it hits the road.'
+  },
+  {
+    label: 'What if Warehouses moved from Thursday to Monday?',
+    from: 'Thu', taskId: 'hth3', to: 'Mon',
+    // Industrial cluster on Monday — natural fit
+    deltaKm: -19,
+    verdict: 'better',
+    verdictText: '✓ Moving Warehouses to Monday saves 19 km — it clusters with the Industrial Zone, eliminating a cross-city leg. Strong What-If result.'
+  }
+];
+
+let hwcCurrentScenario = -1;
+let hwcAnimTimer = null;
+let hwcState = {};
+
+function hwcResetState() {
+  hwcState = {};
+  HWC_DAYS.forEach(d => {
+    hwcState[d] = HWC_BASE_TASKS[d].map(t=>({...t, moved:false, animating:false}));
+  });
+}
+
+function hwcDayKm(day) {
+  return hwcState[day].reduce((s,t)=>s+t.km,0);
+}
+function hwcTotalKm() { return HWC_DAYS.reduce((s,d)=>s+hwcDayKm(d),0); }
+
+function hwcRenderStatic(highlightFrom, highlightTo, highlightId) {
+  const sched = document.getElementById('hwcSchedule');
+  if (!sched) return;
+  sched.innerHTML = '';
+  HWC_DAYS.forEach(day => {
+    const col = document.createElement('div');
+    col.className = 'hwc-day-col';
+    const dayKm = hwcDayKm(day);
+    const base  = HWC_BASE_KM[HWC_DAYS.indexOf(day)];
+    const dKm   = dayKm - base;
+    const dStr  = Math.abs(dKm) < 0.5 ? '' : (dKm>0?'+':'')+dKm.toFixed(0)+' km';
+    const dCol  = dKm<-0.5 ? 'color:var(--green-d)' : dKm>0.5 ? 'color:var(--red)' : '';
+
+    const isFrom = day === highlightFrom;
+    const isTo   = day === highlightTo;
+
+    col.innerHTML = `<div class="hwc-day-hdr" style="${isTo?'background:rgba(22,163,74,.08);':isFrom?'background:rgba(180,83,9,.06);':''}">
+      <div class="hwc-day-name">${day}</div>
+      <div class="hwc-day-km">${dayKm.toFixed(0)}</div>
+      <div class="hwc-day-delta" style="${dCol}">${dStr}</div>
+    </div>
+    <div class="hwc-tasks" style="${isTo?'background:rgba(22,163,74,.04);':isFrom?'background:rgba(180,83,9,.03);':''}">
+    </div>`;
+    sched.appendChild(col);
+  });
+
+  // render chips
+  HWC_DAYS.forEach(day => {
+    const area = sched.querySelector('[data-day]') 
+      ? null 
+      : sched.querySelectorAll('.hwc-tasks')[HWC_DAYS.indexOf(day)];
+    const areas = sched.querySelectorAll('.hwc-tasks');
+    const a = areas[HWC_DAYS.indexOf(day)];
+    hwcState[day].forEach(task => {
+      const chip = document.createElement('div');
+      const isActive = task.id === highlightId;
+      chip.className = 'hwc-chip' + (task.moved?' moved':'') + (isActive&&task.moved?' hwc-just-moved':'');
+      chip.innerHTML = `<span class="hwc-chip-icon">${task.icon}</span>
+        <div class="hwc-chip-body">
+          <div class="hwc-chip-name">${task.name}</div>
+          <div class="hwc-chip-km">${task.km} km</div>
+        </div>`;
+      if (isActive && !task.moved) {
+        chip.style.border = '1.5px solid var(--amber)';
+        chip.style.background = 'rgba(180,83,9,.06)';
+      }
+      a.appendChild(chip);
+    });
+  });
+}
+
+// Animated counter helper
+function animateCount(el, from, to, unit, duration, prefix) {
+  const start = performance.now();
+  const update = (now) => {
+    const p = Math.min((now-start)/duration, 1);
+    const ease = 1 - Math.pow(1-p, 3);
+    const val = from + (to-from)*ease;
+    el.textContent = (prefix||'') + val.toFixed(0) + unit;
+    if (p < 1) requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+}
+
+function hwcRunScenario(idx) {
+  const scenario = HWC_SCENARIOS[idx];
+  const badge = document.getElementById('hwc-scenario-badge');
+  const slText = document.getElementById('hwc-sl-text');
+  const distAfter = document.getElementById('hd-dist-after');
+  const fuelAfter = document.getElementById('hd-fuel-after');
+  const distPill  = document.getElementById('hd-dist-pill');
+  const fuelPill  = document.getElementById('hd-fuel-pill');
+  const verdict   = document.getElementById('hwc-verdict');
+  const vtxt      = document.getElementById('hwc-verdict-text');
+
+  if(badge) badge.textContent = 'Scenario '+(idx+1)+' of '+HWC_SCENARIOS.length;
+
+  // Phase 1: show question (1.2s)
+  hwcResetState();
+  if(slText) slText.textContent = scenario.label;
+  if(distAfter) distAfter.textContent = '—';
+  if(fuelAfter) fuelAfter.textContent = '—';
+  if(distPill){distPill.textContent='Simulating…';distPill.className='hwc-delta-pill';}
+  if(fuelPill){fuelPill.textContent='Simulating…';fuelPill.className='hwc-delta-pill';}
+  if(verdict) verdict.className='hwc-verdict';
+  if(vtxt) vtxt.textContent='Running simulation…';
+  hwcRenderStatic(scenario.from, scenario.to, scenario.taskId);
+
+  // Phase 2: move the chip (at 1.4s)
+  setTimeout(() => {
+    // Actually move the task in state
+    const taskIdx = hwcState[scenario.from].findIndex(t=>t.id===scenario.taskId);
+    if (taskIdx !== -1) {
+      const [task] = hwcState[scenario.from].splice(taskIdx, 1);
+      task.moved = true;
+      hwcState[scenario.to].push(task);
+    }
+    hwcRenderStatic(null, scenario.to, scenario.taskId);
+  }, 1400);
+
+  // Phase 3: show result (at 2.2s)
+  setTimeout(() => {
+    const newTotal = HWC_BASE_TOTAL + scenario.deltaKm;
+    const newFuel  = newTotal * 0.28 * 1.85;
+    const baseFuel = HWC_BASE_TOTAL * 0.28 * 1.85;
+    const absDist  = Math.abs(scenario.deltaKm);
+    const absFuel  = Math.abs(newFuel - baseFuel).toFixed(0);
+    const better   = scenario.verdict === 'better';
+
+    // Animate numbers
+    animateCount(distAfter, HWC_BASE_TOTAL, newTotal, ' km', 600);
+    animateCount(fuelAfter, baseFuel, newFuel, '', 600, '€');
+
+    setTimeout(()=>{
+      if(distPill){
+        distPill.textContent=(better?'↓ ':'↑ ')+absDist+' km';
+        distPill.className='hwc-delta-pill '+(better?'better':'worse');
+      }
+      if(fuelPill){
+        fuelPill.textContent=(better?'↓ ':'↑ ')+'€'+absFuel;
+        fuelPill.className='hwc-delta-pill '+(better?'better':'worse');
+      }
+      if(verdict) verdict.className='hwc-verdict '+(better?'better':'worse');
+      if(vtxt) vtxt.textContent = scenario.verdictText;
+    }, 650);
+  }, 2200);
+}
+
+function hwcStartAutoplay() {
+  function next() {
+    hwcCurrentScenario = (hwcCurrentScenario + 1) % HWC_SCENARIOS.length;
+    hwcRunScenario(hwcCurrentScenario);
+    hwcAnimTimer = setTimeout(next, 5800);
+  }
+  // Start first scenario after brief delay
+  setTimeout(next, 800);
+}
+
+// Pause autoplay when tab hidden, resume when visible
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    clearTimeout(hwcAnimTimer);
+  } else {
+    hwcCurrentScenario = (hwcCurrentScenario) % HWC_SCENARIOS.length;
+    hwcAnimTimer = setTimeout(()=>{
+      hwcCurrentScenario = (hwcCurrentScenario+1) % HWC_SCENARIOS.length;
+      hwcRunScenario(hwcCurrentScenario);
+      function loopNext(){ hwcAnimTimer = setTimeout(()=>{hwcCurrentScenario=(hwcCurrentScenario+1)%HWC_SCENARIOS.length;hwcRunScenario(hwcCurrentScenario);loopNext();},5800);} loopNext();
+    }, 400);
+  }
+});
+
+hwcResetState();
+hwcRenderStatic(null,null,null);
+hwcStartAutoplay();
+
+
+
+// ════════════════════════════════════════════════════════════════════════
+// HOME WHAT-IF SIMULATOR
+// ════════════════════════════════════════════════════════════════════════
+const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const KM_PER_DAY=[121.7,123.8,121.2,123.1,116.2,130.5,110.6];
+
+// 7 routes, each with realistic tasks
+const BASE_TASKS={
+  Mon:[{id:'m1',label:'Industrial Zone — 12 containers',km:18,icon:'🏭'},
+       {id:'m2',label:'Central Market — 8 stops',km:9,icon:'🛒'},
+       {id:'m3',label:'Hospital District — 6 stops',km:7,icon:'🏥'},
+       {id:'m4',label:'Residential A — 22 stops',km:28,icon:'🏘️'},
+       {id:'m5',label:'Office Park — 10 stops',km:12,icon:'🏢'},
+       {id:'m6',label:'Port Area — 4 stops',km:20,icon:'⚓'},
+       {id:'m7',label:'Mall Complex — 5 stops',km:14,icon:'🛍️'}],
+  Tue:[{id:'t1',label:'University Campus — 9 stops',km:8,icon:'🎓'},
+       {id:'t2',label:'Restaurant Row — 15 stops',km:11,icon:'🍽️'},
+       {id:'t3',label:'Residential B — 20 stops',km:25,icon:'🏘️'},
+       {id:'t4',label:'Clinic Network — 8 stops',km:9,icon:'🏥'},
+       {id:'t5',label:'Retail Strip — 12 stops',km:14,icon:'🛍️'},
+       {id:'t6',label:'Warehouse District — 6 stops',km:22,icon:'📦'},
+       {id:'t7',label:'Hotel Zone — 7 stops',km:13,icon:'🏨'}],
+  Wed:[{id:'w1',label:'Government Buildings — 5 stops',km:7,icon:'🏛️'},
+       {id:'w2',label:'Residential C — 24 stops',km:30,icon:'🏘️'},
+       {id:'w3',label:'Craft Market — 11 stops',km:10,icon:'🎨'},
+       {id:'w4',label:'Airport Zone — 4 stops',km:18,icon:'✈️'},
+       {id:'w5',label:'Sports Complex — 6 stops',km:9,icon:'⚽'},
+       {id:'w6',label:'Pharma Cluster — 8 stops',km:12,icon:'💊'},
+       {id:'w7',label:'Old Town — 16 stops',km:10,icon:'🏛️'}],
+  Thu:[{id:'th1',label:'Tech Park — 10 stops',km:13,icon:'💻'},
+       {id:'th2',label:'Residential D — 18 stops',km:22,icon:'🏘️'},
+       {id:'th3',label:'Supermarkets — 8 stops',km:10,icon:'🛒'},
+       {id:'th4',label:'Schools Network — 7 stops',km:8,icon:'📚'},
+       {id:'th5',label:'Construction Sites — 5 stops',km:20,icon:'🏗️'},
+       {id:'th6',label:'Marina District — 9 stops',km:14,icon:'⛵'},
+       {id:'th7',label:'Business Bay — 11 stops',km:13,icon:'🏢'}],
+  Fri:[{id:'f1',label:'Residential E — 16 stops',km:20,icon:'🏘️'},
+       {id:'f2',label:'Food Processing — 6 stops',km:14,icon:'🏭'},
+       {id:'f3',label:'Mosque Circuit — 12 stops',km:9,icon:'🕌'},
+       {id:'f4',label:'Car Dealerships — 5 stops',km:11,icon:'🚗'},
+       {id:'f5',label:'Logistics Hub — 7 stops',km:18,icon:'📦'},
+       {id:'f6',label:'Retail Mall 2 — 9 stops',km:13,icon:'🛍️'},
+       {id:'f7',label:'Marina Residences — 14 stops',km:16,icon:'🏖️'}],
+  Sat:[{id:'s1',label:'Weekend Market — 20 stops',km:12,icon:'🎪'},
+       {id:'s2',label:'Residential F — 22 stops',km:28,icon:'🏘️'},
+       {id:'s3',label:'Recreation Zone — 8 stops',km:10,icon:'🌳'},
+       {id:'s4',label:'Expat Community — 11 stops',km:15,icon:'🏡'},
+       {id:'s5',label:'Bakery Network — 9 stops',km:8,icon:'🥖'},
+       {id:'s6',label:'Farm Outlets — 6 stops',km:22,icon:'🌾'},
+       {id:'s7',label:'Shopping District — 13 stops',km:14,icon:'🛍️'}],
+  Sun:[{id:'su1',label:'Airport Cargo — 4 stops',km:20,icon:'✈️'},
+       {id:'su2',label:'Residential G — 15 stops',km:18,icon:'🏘️'},
+       {id:'su3',label:'Business Hotels — 8 stops',km:11,icon:'🏨'},
+       {id:'su4',label:'Industrial South — 9 stops',km:16,icon:'🏭'},
+       {id:'su5',label:'Clinic Row — 6 stops',km:8,icon:'🏥'},
+       {id:'su6',label:'University 2 — 7 stops',km:9,icon:'🎓'},
+       {id:'su7',label:'Expo Zone — 10 stops',km:15,icon:'🎡'}]
+};
+
+let simState={};
+let draggedTask=null;
+let dragSource=null;
+let hasChanges=false;
+
+function initSimState(){
+  simState={};
+  DAYS.forEach(d=>{
+    simState[d]={tasks:BASE_TASKS[d].map(t=>({...t,status:'normal'})),km:KM_PER_DAY[DAYS.indexOf(d)]};
+  });
+  hasChanges=false;
+}
+
+function calcDayKm(day){
+  return simState[day].tasks.reduce((s,t)=>s+(t.status==='removed'?0:t.km),0);
+}
+
+function renderGrid(){
+  const grid=document.getElementById('weekGrid');
+  grid.innerHTML='';
+  DAYS.forEach(day=>{
+    const col=document.createElement('div');
+    col.className='day-col';
+    const km=calcDayKm(day);
+    const baseKm=KM_PER_DAY[DAYS.indexOf(day)];
+    const delta=km-baseKm;
+    const deltaStr=delta===0?'':(delta>0?`+${delta.toFixed(0)}`:`${delta.toFixed(0)}`)+' km';
+    const deltaCol=delta===0?'rgba(255,255,255,.3)':delta<0?'#16A34A':'#DC2626';
+    col.innerHTML=`<div class="day-header"><div class="day-name">${day}</div><div class="day-count">${km.toFixed(0)} km</div>${delta!==0?`<div class="day-km" style="color:${deltaCol}">${deltaStr}</div>`:''}</div><div class="tasks-area" data-day="${day}" ondragover="dragOver(event)" ondrop="drop(event,this)"></div>`;
+    grid.appendChild(col);
+  });
+  // render tasks
+  DAYS.forEach(day=>{
+    const area=grid.querySelector(`[data-day="${day}"]`);
+    simState[day].tasks.forEach(task=>{
+      const chip=document.createElement('div');
+      chip.className='task-chip'+(task.status==='moved'?' moved':'')+(task.status==='removed'?' removed':'');
+      chip.draggable=task.status!=='removed';
+      chip.innerHTML=`<span class="task-icon">${task.icon}</span><div><div class="task-label">${task.label}</div><div class="task-km">${task.km} km</div></div>`;
+      chip.title=task.status==='removed'?'Click to restore':'Drag to move · Click to remove';
+      chip.addEventListener('click',()=>toggleRemove(day,task.id));
+      chip.addEventListener('dragstart',e=>{draggedTask={day,id:task.id};chip.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+      chip.addEventListener('dragend',()=>chip.classList.remove('dragging'));
+      area.appendChild(chip);
+    });
+  });
+  hasChanges=simState && DAYS.some(d=>simState[d].tasks.some(t=>t.status!=='normal'));
+  document.getElementById('run-btn').disabled=!hasChanges;
+  document.getElementById('impactPanel').style.display='none';
+  document.getElementById('tab-impact').style.display='none';
+}
+
+function toggleRemove(day,id){
+  const t=simState[day].tasks.find(t=>t.id===id);
+  if(!t)return;
+  t.status=t.status==='removed'?'normal':'removed';
+  renderGrid();
+}
+
+function dragOver(e){e.preventDefault();e.currentTarget.classList.add('drag-over')}
+
+function drop(e,area){
+  e.preventDefault();
+  area.classList.remove('drag-over');
+  if(!draggedTask)return;
+  const targetDay=area.getAttribute('data-day');
+  if(targetDay===draggedTask.day){draggedTask=null;return;}
+  // move task
+  const srcIdx=simState[draggedTask.day].tasks.findIndex(t=>t.id===draggedTask.id);
+  if(srcIdx===-1){draggedTask=null;return;}
+  const [task]=simState[draggedTask.day].tasks.splice(srcIdx,1);
+  task.status='moved';
+  simState[targetDay].tasks.push(task);
+  draggedTask=null;
+  renderGrid();
+}
+
+function resetSimulator(){
+  initSimState();
+  renderGrid();
+  document.getElementById('impactPanel').style.display='none';
+  document.getElementById('tab-impact').style.display='none';
+}
+
+function runSimulation(){
+  // Calculate totals
+  const baseTotal=KM_PER_DAY.reduce((a,b)=>a+b,0); // 847
+  const newTotal=DAYS.reduce((s,d)=>s+calcDayKm(d),0);
+  const kmDelta=newTotal-baseTotal;
+  const pctDelta=(kmDelta/baseTotal*100);
+
+  // Time (avg speed 35 km/h)
+  const baseTime=baseTotal/35;
+  const newTime=newTotal/35;
+  const timeDelta=newTime-baseTime;
+
+  // Fuel (28L/100km, €1.85/L)
+  const baseFuel=baseTotal*.28*1.85;
+  const newFuel=newTotal*.28*1.85;
+  const fuelDelta=newFuel-baseFuel;
+
+  // CO2 (2.63 kg/L)
+  const co2Delta=(newTotal-baseTotal)*.28*2.63;
+
+  const better=kmDelta<0;
+  const neutral=kmDelta===0;
+
+  // Render impact metrics
+  const mp=document.getElementById('impactMetrics');
+  mp.innerHTML=`
+    <div class="ip-item"><div class="ip-label">Weekly distance</div><div class="ip-before">${baseTotal.toFixed(0)} km</div><div class="ip-after">${newTotal.toFixed(0)} km</div><div class="ip-delta ${better?'better':neutral?'neutral':'worse'}">${better?'↓':'↑'} ${Math.abs(kmDelta).toFixed(0)} km (${Math.abs(pctDelta).toFixed(1)}%)</div></div>
+    <div class="ip-item"><div class="ip-label">Weekly duration</div><div class="ip-before">${fmtTime(baseTime)}</div><div class="ip-after">${fmtTime(newTime)}</div><div class="ip-delta ${better?'better':neutral?'neutral':'worse'}">${better?'↓':'↑'} ${fmtTime(Math.abs(timeDelta))}</div></div>
+    <div class="ip-item"><div class="ip-label">Fuel cost / week</div><div class="ip-before">€${baseTotal.toFixed(0)*0.28*1.85/1000<1?'':''}${(baseTotal*.28*1.85).toFixed(0)}</div><div class="ip-after">€${(newTotal*.28*1.85).toFixed(0)}</div><div class="ip-delta ${better?'better':neutral?'neutral':'worse'}">${better?'↓':'↑'} €${Math.abs(fuelDelta).toFixed(0)}</div></div>
+    <div class="ip-item"><div class="ip-label">CO₂ impact / week</div><div class="ip-before">${(baseTotal*.28*2.63).toFixed(0)} kg</div><div class="ip-after">${(newTotal*.28*2.63).toFixed(0)} kg</div><div class="ip-delta ${better?'better':neutral?'neutral':'worse'}">${better?'↓':'↑'} ${Math.abs(co2Delta).toFixed(0)} kg</div></div>
+  `;
+
+  // Verdict
+  const vb=document.getElementById('verdictBar');
+  if(neutral){vb.innerHTML=`<span class="verdict-icon">➖</span><span class="verdict-text">No change detected. Try moving or removing tasks to see the impact.</span>`;}
+  else if(better){vb.style.background='var(--green-lt)';vb.innerHTML=`<span class="verdict-icon">✅</span><span class="verdict-text"><strong>This change improves the operation.</strong> Weekly distance drops by ${Math.abs(kmDelta).toFixed(0)} km — saving €${Math.abs(fuelDelta).toFixed(0)} in fuel per week and ${Math.abs(co2Delta).toFixed(0)} kg CO₂. In the Digital Twin, you'd apply this directly to the live plan.</span>`;}
+  else{vb.style.background='var(--red-lt)';vb.innerHTML=`<span class="verdict-icon">⚠️</span><span class="verdict-text"><strong>This change worsens the operation.</strong> Weekly distance increases by ${Math.abs(kmDelta).toFixed(0)} km, adding €${Math.abs(fuelDelta).toFixed(0)} in fuel cost per week. The Digital Twin stops you before this hits the road. Try a different configuration.</span>`;}
+
+  document.getElementById('impactPanel').style.display='block';
+  document.getElementById('tab-impact').style.display='inline-block';
+  setTimeout(()=>document.getElementById('impactPanel').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+function fmtTime(h){const hh=Math.floor(h);const mm=Math.round((h-hh)*60);return`${hh}h ${mm}m`}
+
+// Init
+initSimState();
+setTimeout(renderGrid,50);
+
+// ── Formatters ────────────────────────────────────────────────────────────
+function fmt(n,d=0){return n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
+function fmtEur(n){if(n>=1e6)return'€'+fmt(n/1e6,2)+'M';if(n>=1000)return'€'+fmt(n/1000,1)+'K';return'€'+fmt(n,0)}
+function fmtKg(n){if(n>=1000)return fmt(n/1000,1)+' t';return fmt(n,0)+' kg'}
+
+// ── Waste tool ─────────────────────────────────────────────────────────────
+function runWasteTool(){
+  const routes=+document.getElementById('wt-routes').value||6;
+  const dist=+document.getElementById('wt-dist').value||85;
+  const stops=+document.getElementById('wt-stops').value||55;
+  const detour=+document.getElementById('wt-detour').value||4.5;
+  const freq=+document.getElementById('wt-freq').value||3;
+  const fuel=+document.getElementById('wt-fuel').value||1.85;
+  const fuelRate=28; // L/100km
+  const avgSpeed=25; // km/h collection speed
+
+  const weeklyKm=detour*2*freq; // round trip detour × visits
+  const weeklyL=weeklyKm*(fuelRate/100);
+  const weeklyFuelCost=weeklyL*fuel;
+  const weeklyTime=weeklyKm/avgSpeed;
+
+  // Find best route (route with least detour impact = nearest)
+  const nearest=Math.ceil(routes/2); // simplified: route N is nearest
+  const annual=weeklyFuelCost*52;
+
+  setText('wtr-km',fmt(weeklyKm,1)+' km');
+  setText('wtr-fuel',fmtEur(weeklyFuelCost));
+  setText('wtr-time',fmt(weeklyTime,1)+' hrs');
+  setText('wtr-annual',fmtEur(annual));
+  
+  addClass('waste-results','show');
+  setTimeout(()=>document.getElementById('waste-results').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+// ── Municipality tool ──────────────────────────────────────────────────────
+// ── Municipality: service point list ─────────────────────────────────────────
+const MUNI_SP = [
+  {id:'sp1', name:'Residential Block A',    zone:'Zone 1', cur:7, sug:4, kmPerVisit:0.6},
+  {id:'sp2', name:'Central Market',         zone:'Zone 1', cur:7, sug:5, kmPerVisit:0.5},
+  {id:'sp3', name:'Industrial Estate',      zone:'Zone 2', cur:5, sug:5, kmPerVisit:1.2},
+  {id:'sp4', name:'Residential Block B',    zone:'Zone 2', cur:7, sug:3, kmPerVisit:0.7},
+  {id:'sp5', name:'Hospital Complex',       zone:'Zone 3', cur:7, sug:7, kmPerVisit:0.4},
+  {id:'sp6', name:'Office Park',            zone:'Zone 3', cur:5, sug:3, kmPerVisit:0.9},
+  {id:'sp7', name:'Shopping District',      zone:'Zone 4', cur:5, sug:4, kmPerVisit:0.6},
+  {id:'sp8', name:'University Campus',      zone:'Zone 4', cur:5, sug:5, kmPerVisit:0.8},
+];
+// accepted: null = no suggestion, true/false = user decision
+let muniAccepted = {};
+MUNI_SP.forEach(sp => { muniAccepted[sp.id] = sp.sug < sp.cur ? true : null; });
+
+function muniRenderList() {
+  const list = document.getElementById('muni-sp-list');
+  if (!list) return;
+  list.innerHTML = `<div class="muni-sp-hdr">
+    <span>Service point</span><span style="text-align:center">Current</span>
+    <span style="text-align:center">Suggestion</span><span style="text-align:center">What-If?</span><span></span>
+  </div>`;
+  MUNI_SP.forEach(sp => {
+    const hasSug = sp.sug < sp.cur;
+    const accepted = muniAccepted[sp.id];
+    const row = document.createElement('div');
+    row.className = 'muni-sp-row';
+    row.innerHTML = `
+      <div><div class="muni-sp-name">${sp.name}</div><div class="muni-sp-zone">${sp.zone}</div></div>
+      <div class="muni-sp-cur">${sp.cur}×/wk</div>
+      <div class="muni-sp-sug ${hasSug?'down':'same'}">
+        ${hasSug ? '↓ '+sp.sug+'×/wk' : '—'}
+      </div>
+      <div class="muni-sp-toggle">
+        ${hasSug ? `
+          <button class="muni-toggle-btn ${accepted===true?'accepted':'rejected'}"
+            onclick="muniToggle('${sp.id}',true)">Accept</button>
+          <button class="muni-toggle-btn ${accepted===false?'accepted':'rejected'}"
+            onclick="muniToggle('${sp.id}',false)" style="${accepted===false?'background:var(--red-lt);border-color:rgba(220,38,38,.3);color:var(--red)':''}">Reject</button>
+        ` : '<span class="muni-toggle-btn na">No change</span>'}
+      </div>
+      <div></div>`;
+    list.appendChild(row);
+  });
+}
+
+function muniToggle(id, accept) {
+  muniAccepted[id] = accept;
+  muniRenderList();
+}
+
+function runMuniTool() {
+  const fuel = +document.getElementById('mt-fuel').value || 1.85;
+  let totalSavedVisits=0, totalSavedKm=0;
+  const accepted=[], rejected=[];
+
+  MUNI_SP.forEach(sp => {
+    if(sp.sug < sp.cur && muniAccepted[sp.id]===true) {
+      const saved=sp.cur-sp.sug;
+      totalSavedVisits+=saved;
+      totalSavedKm+=saved*sp.kmPerVisit*2; // round trip
+      accepted.push(sp);
+    } else if(sp.sug < sp.cur && muniAccepted[sp.id]===false) {
+      rejected.push(sp);
+    }
+  });
+
+  const savedL=totalSavedKm*(28/100);
+  const weeklyFuelSaving=savedL*fuel;
+  const annual=weeklyFuelSaving*52;
+
+  // Summary bar
+  const bar=document.getElementById('muni-summary-bar');
+  if(bar){bar.innerHTML=`
+    <div class="muni-sum-cell">
+      <div class="muni-sum-label">Changes accepted</div>
+      <div class="muni-sum-val">${accepted.length}</div>
+      <div class="muni-sum-sub">of ${MUNI_SP.filter(s=>s.sug<s.cur).length} suggestions</div>
+    </div>
+    <div class="muni-sum-cell" style="border-left:1px solid var(--border2)">
+      <div class="muni-sum-label">Visits saved / week</div>
+      <div class="muni-sum-val" style="color:var(--green)">${totalSavedVisits}</div>
+      <div class="muni-sum-sub">unnecessary collections</div>
+    </div>
+    <div class="muni-sum-cell" style="border-left:1px solid var(--border2)">
+      <div class="muni-sum-label">km saved / week</div>
+      <div class="muni-sum-val" style="color:var(--green)">${fmt(totalSavedKm,0)}</div>
+      <div class="muni-sum-sub">across all routes</div>
+    </div>
+  `;}
+
+  setText('mtr-annual',fmtEur(annual));
+  setText('mtr-visits',totalSavedVisits+'/wk');
+
+  let note = accepted.length===0
+    ? 'No changes accepted. Accept at least one suggestion to see the saving.'
+    : `Accepting ${accepted.length} frequency reductions saves ${totalSavedVisits} collection visits per week — ${fmt(totalSavedKm,0)} km less driven, without any service level impact. Service points with higher fill rates would require more visits and are excluded from optimisation.`;
+  setText('muni-note',note);
+  addClass('muni-results','show');
+  setTimeout(()=>document.getElementById('muni-results').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+// Init muni list on page load
+setTimeout(muniRenderList, 80);
+
+// ── ESG tool ───────────────────────────────────────────────────────────────
+function runESGTool(){
+  const eaFleet=+document.getElementById('ea-fleet').value||20;
+  const eaKm=+document.getElementById('ea-km').value||750;
+  const eaRate=+document.getElementById('ea-rate').value||28;
+  const ebFleet=+document.getElementById('eb-fleet').value||20;
+  const ebKm=+document.getElementById('eb-km').value||490;
+  const ebRate=+document.getElementById('eb-rate').value||28;
+
+  const aL=eaFleet*eaKm*(eaRate/100);
+  const bL=ebFleet*ebKm*(ebRate/100);
+  const aCo2=aL*2.63,bCo2=bL*2.63;
+  const aCost=aL*1.85,bCost=bL*1.85;
+  const co2Delta=(aCo2-bCo2)*52;
+  const costDelta=(aCost-bCost)*52;
+
+  setText('ea-co2-disp',fmt(aCo2,0)+' kg');
+  setText('ea-cost-disp',fmtEur(aCost)+'/wk');
+  setText('eb-co2-disp',fmt(bCo2,0)+' kg');
+  setText('eb-cost-disp',fmtEur(bCost)+'/wk');
+  setText('etr-co2',fmtKg(co2Delta)+'/yr');
+  setText('etr-cost',fmtEur(costDelta)+'/yr');
+  addClass('esg-results','show');
+  setTimeout(()=>document.getElementById('esg-results').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+// ── Fleet tool ─────────────────────────────────────────────────────────────
+// ── Fleet tool: scenario-based ───────────────────────────────────────────────
+let fleetScenario='add';
+
+function setFleetScenario(s){
+  fleetScenario=s;
+  ['add','remove','absorb'].forEach(k=>{
+    document.getElementById('fts-'+k).classList.toggle('active',k===s);
+  });
+  const inp=document.getElementById('ft-scenario-inputs');
+  if(!inp) return;
+  if(s==='add'){
+    inp.innerHTML=`<div class="tool-inputs" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="ti-field"><label class="ti-label">Vehicles to add</label><input class="ti-input" type="number" id="ft-delta" value="2" min="1"><div class="ti-unit">new vehicles</div></div>
+      <div class="ti-field"><label class="ti-label">Vehicle purchase cost</label><input class="ti-input" type="number" id="ft-cost" value="90000" min="10000"><div class="ti-unit">€ / vehicle</div></div>
+      <div class="ti-field"><label class="ti-label">Operating cost / km</label><input class="ti-input" type="number" id="ft-opex" value="0.68" step="0.01"><div class="ti-unit">€ / km</div></div>
+    </div>`;
+  } else if(s==='remove'){
+    inp.innerHTML=`<div class="tool-inputs" style="grid-template-columns:1fr 1fr">
+      <div class="ti-field"><label class="ti-label">Vehicles to remove</label><input class="ti-input" type="number" id="ft-delta" value="1" min="1"><div class="ti-unit">vehicles</div></div>
+      <div class="ti-field"><label class="ti-label">Operating cost / km</label><input class="ti-input" type="number" id="ft-opex" value="0.68" step="0.01"><div class="ti-unit">€ / km</div></div>
+    </div>`;
+  } else {
+    inp.innerHTML=`<div class="tool-inputs" style="grid-template-columns:1fr 1fr">
+      <div class="ti-field"><label class="ti-label">New service points to add</label><input class="ti-input" type="number" id="ft-newstops" value="120" min="10"><div class="ti-unit">service points</div></div>
+      <div class="ti-field"><label class="ti-label">Avg km per service point</label><input class="ti-input" type="number" id="ft-stopkm" value="1.8" step="0.1" min="0.2"><div class="ti-unit">km / stop</div></div>
+    </div>`;
+  }
+}
+
+function addFleetStep(el, label, body, type='') {
+  const div=document.createElement('div');
+  div.className='ft-analysis-step '+(type||'');
+  div.style.animationDelay=(el.children.length*120)+'ms';
+  div.innerHTML=`<div class="fas-header">${label}</div><div class="fas-body">${body}</div>`;
+  el.appendChild(div);
+}
+
+function runFleetTool(){
+  const cur=+document.getElementById('ft-current').value||12;
+  const km=+document.getElementById('ft-km').value||800;
+  const rev=+document.getElementById('ft-rev').value||1.20;
+  const steps=document.getElementById('ft-analysis-steps');
+  const verdict=document.getElementById('ft-final-verdict');
+  if(!steps) return;
+  steps.innerHTML='';
+  if(verdict) verdict.style.display='none';
+
+  const weeklyRevPerVehicle=km*rev;
+  const annualRevPerVehicle=weeklyRevPerVehicle*52;
+
+  if(fleetScenario==='add'){
+    const delta=+(document.getElementById('ft-delta')||{value:'2'}).value||2;
+    const cost=+(document.getElementById('ft-cost')||{value:'90000'}).value||90000;
+    const opex=+(document.getElementById('ft-opex')||{value:'.68'}).value||0.68;
+    const annualOpexPerVehicle=km*opex*52;
+    const netPerVehicle=annualRevPerVehicle-annualOpexPerVehicle;
+    const totalInvest=delta*cost;
+    const totalNet=delta*netPerVehicle;
+    const payback=totalNet>0?Math.round(totalInvest/totalNet*12):999;
+    const curUtil=Math.min(96, Math.round(72*(cur/(cur+delta*0.5))+20));
+    const newUtil=Math.min(96, Math.round(curUtil*(cur+delta)/cur*0.92));
+
+    setTimeout(()=>addFleetStep(steps,'📊 Step 1 — Capacity analysis',
+      `Current fleet of <strong>${cur} vehicles</strong> is running at an estimated <strong>${curUtil}% utilisation</strong> based on ${km} km/week per vehicle. Adding <strong>${delta} vehicles</strong> increases total weekly capacity from ${fmt(cur*km)} to ${fmt((cur+delta)*km)} km.`,''),100);
+    setTimeout(()=>addFleetStep(steps,
+      netPerVehicle>0?'✓ Step 2 — Revenue vs. operating cost':'⚠ Step 2 — Revenue vs. operating cost',
+      `Each new vehicle generates <strong>€${fmt(annualRevPerVehicle)}/year</strong> in revenue at ${km} km/week and €${rev}/km. Operating cost is <strong>€${fmt(annualOpexPerVehicle)}/year</strong> at €${opex}/km. Net contribution per vehicle: <strong>${fmtEur(netPerVehicle)}/year</strong>.`,
+      netPerVehicle>0?'positive':'warning'),350);
+    setTimeout(()=>{
+      if(totalNet<=0){
+        addFleetStep(steps,'✗ Step 3 — Investment viability',`Operating cost exceeds revenue at these parameters. The investment of ${fmtEur(totalInvest)} would not be recovered. Consider higher utilisation targets or renegotiating contract rates.`,'negative');
+      } else {
+        const pb=payback<=24?'positive':payback<=48?'warning':'negative';
+        addFleetStep(steps,
+          (pb==='positive'?'✓':'⚠')+' Step 3 — Investment viability',
+          `Total investment: <strong>${fmtEur(totalInvest)}</strong>. Annual net return: <strong>${fmtEur(totalNet)}</strong>. Estimated payback: <strong>${payback} months</strong>. ${payback<=24?'This is within a healthy return window for fleet investment.':payback<=48?'Payback period is moderate — acceptable if utilisation improves.':'Payback period is extended. Consider phasing the addition or verifying demand.'}`,
+          pb);
+      }
+      if(verdict){
+        verdict.style.display='flex';
+        setText('ft-verdict-label','Estimated payback');
+        setText('ftr-payback',payback===999?'Not viable':payback+' months');
+        setText('ftr-verdict',payback<=24?'✓ Proceed':'⚠ Review');
+      }
+    }, 600);
+
+  } else if(fleetScenario==='remove'){
+    const delta=+(document.getElementById('ft-delta')||{value:'1'}).value||1;
+    const opex=+(document.getElementById('ft-opex')||{value:'.68'}).value||0.68;
+    const remaining=cur-delta;
+    if(remaining<=0){addFleetStep(steps,'✗ Cannot remove','Fleet would reach zero vehicles.','negative');return;}
+    const newKmPerVehicle=cur*km/remaining;
+    const newUtil=Math.min(99,Math.round((cur/remaining)*72+18));
+    const annualSaving=delta*km*opex*52;
+
+    setTimeout(()=>addFleetStep(steps,'📊 Step 1 — Redistribution analysis',
+      `Removing <strong>${delta} vehicle(s)</strong> from a fleet of ${cur} means the remaining <strong>${remaining} vehicles</strong> absorb the same workload — each running approximately <strong>${fmt(newKmPerVehicle)} km/week</strong> (up from ${km} km/week).`,''),100);
+    setTimeout(()=>{
+      const feasible=newKmPerVehicle<=1100;
+      addFleetStep(steps,
+        feasible?'✓ Step 2 — Operational feasibility':'✗ Step 2 — Operational feasibility',
+        feasible
+          ? `At ${fmt(newKmPerVehicle)} km/week per vehicle, the remaining fleet is within operational limits. Estimated utilisation rises to <strong>${newUtil}%</strong> — elevated but manageable.`
+          : `At ${fmt(newKmPerVehicle)} km/week per vehicle, the remaining fleet would be overloaded. This configuration risks driver overtime, service delays, and vehicle wear. Removal is not recommended at current demand levels.`,
+        feasible?'positive':'negative');
+      if(feasible){
+        setTimeout(()=>{
+          addFleetStep(steps,'💰 Step 3 — Cost saving',
+            `Removing ${delta} vehicle(s) saves approximately <strong>${fmtEur(annualSaving)}/year</strong> in operating costs (fuel + maintenance at €${opex}/km). Capital freed from reduced insurance and depreciation is additional.`,'positive');
+          if(verdict){
+            verdict.style.display='flex';
+            setText('ft-verdict-label','Annual saving');
+            setText('ftr-payback',fmtEur(annualSaving)+'/yr');
+            setText('ftr-verdict','✓ Feasible');
+          }
+        },350);
+      }
+    },350);
+
+  } else { // absorb
+    const newStops=+(document.getElementById('ft-newstops')||{value:'120'}).value||120;
+    const stopKm=+(document.getElementById('ft-stopkm')||{value:'1.8'}).value||1.8;
+    const addedKmWeek=newStops*stopKm;
+    const addedKmPerVehicle=addedKmWeek/cur;
+    const newTotal=km+addedKmPerVehicle;
+    const canAbsorb=newTotal<=1050;
+
+    setTimeout(()=>addFleetStep(steps,'📊 Step 1 — Demand calculation',
+      `Adding <strong>${newStops} service points</strong> at ~${stopKm} km each generates approximately <strong>${fmt(addedKmWeek)} km/week</strong> of additional demand — spread across ${cur} vehicles, that's +${fmt(addedKmPerVehicle)} km/vehicle/week.`,''),100);
+    setTimeout(()=>{
+      addFleetStep(steps,
+        canAbsorb?'✓ Step 2 — Fleet capacity check':'⚠ Step 2 — Fleet capacity check',
+        canAbsorb
+          ? `Each vehicle would run <strong>${fmt(newTotal)} km/week</strong> — within the operational limit. Your current fleet can absorb this demand without adding vehicles.`
+          : `Each vehicle would need to run <strong>${fmt(newTotal)} km/week</strong> — above sustainable operational limits (~1,050 km/week). Additional capacity would be required.`,
+        canAbsorb?'positive':'warning');
+    },350);
+    setTimeout(()=>{
+      if(canAbsorb){
+        addFleetStep(steps,'💡 Step 3 — Recommendation',
+          `Current fleet of ${cur} vehicles can absorb the new demand through route rebalancing. No additional vehicles required. The Digital Twin models the exact rebalancing on your actual route network.`,'positive');
+        if(verdict){
+          verdict.style.display='flex';
+          setText('ft-verdict-label','Additional vehicles needed');
+          setText('ftr-payback','0');
+          setText('ftr-verdict','✓ Fleet sufficient');
+        }
+      } else {
+        const needed=Math.ceil((newTotal-1050)*cur/1050/km*cur);
+        addFleetStep(steps,'📋 Step 3 — Capacity gap',
+          `Estimated <strong>${Math.max(1,needed)} additional vehicle(s)</strong> needed to service ${newStops} new points without overloading the fleet. The Digital Twin calculates the exact requirement from your route network.`,'warning');
+        if(verdict){
+          verdict.style.display='flex';
+          setText('ft-verdict-label','Estimated vehicles needed');
+          setText('ftr-payback',Math.max(1,needed)+' vehicle(s)');
+          setText('ftr-verdict','⚠ Expand fleet');
+        }
+      }
+    },600);
+  }
+
+  addClass('fleet-results','show');
+  setTimeout(()=>document.getElementById('fleet-results').scrollIntoView({behavior:'smooth',block:'nearest'}),700);
+}
+
+// Init fleet scenario
+setTimeout(()=>setFleetScenario('add'),80);
+
+// ── Logistics tool ─────────────────────────────────────────────────────────
+function runLogTool(){
+  const aD=+document.getElementById('la-dist').value||120;
+  const aS=+document.getElementById('la-stops').value||8;
+  const aR=+document.getElementById('la-ret').value||90;
+  const bD=+document.getElementById('lb-dist').value||95;
+  const bS=+document.getElementById('lb-stops').value||6;
+  const bR=+document.getElementById('lb-ret').value||75;
+  const cap=+document.getElementById('lc-cap').value||20;
+  const load=+document.getElementById('lc-load').value||1.2;
+  const fuel=+document.getElementById('lc-fuel').value||1.85;
+  const fuelRate=30;
+
+  const totalStops=aS+bS;
+  const totalLoad=totalStops*load;
+  const feasible=totalLoad<=cap;
+
+  const separateKm=aD+aR+bD+bR;
+  // Consolidated: one outbound covering both, one return
+  const consolidatedOutbound=aD+(bD*.7); // overlap saving
+  const consolidatedReturn=Math.max(aR,bR)*.7; // one return, optimised
+  const consolidatedKm=consolidatedOutbound+consolidatedReturn;
+  const savedKm=separateKm-consolidatedKm;
+  const savedL=savedKm*(fuelRate/100);
+  const savedFuel=savedL*fuel;
+  const annual=savedFuel*260; // ~260 working days
+  const pct=Math.round(savedKm/separateKm*100);
+
+  const feas=document.getElementById('log-feasibility');
+  if(feasible){
+    feas.style.background='var(--green-lt)';feas.style.border='1px solid rgba(22,163,74,.2)';
+    feas.innerHTML=`<strong style="color:var(--green-d)">✓ Consolidation is feasible.</strong> Combined load (${fmt(totalLoad,1)} units) fits within vehicle capacity (${cap} units). Time window validation requires your actual delivery schedule — the Digital Twin checks this automatically.`;
+  } else {
+    feas.style.background='var(--red-lt)';feas.style.border='1px solid rgba(220,38,38,.2)';
+    feas.innerHTML=`<strong style="color:var(--red)">⚠ Capacity constraint detected.</strong> Combined load (${fmt(totalLoad,1)} units) exceeds vehicle capacity (${cap} units). Consider partial consolidation or a higher-capacity vehicle. The Digital Twin tests multiple vehicle configurations automatically.`;
+  }
+
+  setText('ltr-dist',fmt(savedKm,0)+' km');
+  setText('ltr-ret',fmt(Math.min(aR,bR)*.6,0)+' km');
+  setText('ltr-fuel',fmtEur(savedFuel));
+  setText('ltr-annual',fmtEur(annual));
+  setText('ltr-pct','↓ '+pct+'%');
+
+  addClass('log-results','show');
+  setTimeout(()=>document.getElementById('log-results').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+// ── Scroll reveal ─────────────────────────────────────────────────────────
+function initReveal(){
+  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.1});
+  document.querySelectorAll('.page.active .reveal').forEach(el=>{el.classList.remove('visible');obs.observe(el);});
+}
+initReveal();
+window.addEventListener('scroll',initReveal,{passive:true});
+
+// Drag-over cleanup
+document.addEventListener('dragover',e=>{document.querySelectorAll('.tasks-area').forEach(a=>a.classList.remove('drag-over'))});
+</script>
+</body>
+</html>
