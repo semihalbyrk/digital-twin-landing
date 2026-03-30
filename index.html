@@ -29,15 +29,15 @@ nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
   background:rgba(248,247,244,.93);backdrop-filter:blur(12px);
   border-bottom:1px solid var(--border2);
-  padding:0 32px;height:60px;
+  padding:0 32px;height:64px;
   display:flex;align-items:center;justify-content:space-between;
 }
 .nav-brand{display:flex;align-items:center;gap:10px;cursor:pointer}
-.nav-brand-name{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--navy)}
+.nav-brand-name{font-family:var(--sans);font-size:17px;font-weight:700;color:var(--navy)}
 .nav-links{display:flex;align-items:center;gap:4px}
-.nav-link{font-size:13px;font-weight:500;color:var(--muted);padding:6px 11px;border-radius:6px;transition:all .15s;cursor:pointer}
+.nav-link{font-size:14px;font-weight:500;color:var(--muted);padding:7px 13px;border-radius:6px;transition:all .15s;cursor:pointer}
 .nav-link:hover,.nav-link.active{color:var(--navy);background:var(--bg2)}
-.nav-cta{background:var(--navy);color:#fff;border-radius:6px;padding:8px 18px;font-size:13px;font-weight:600;transition:background .15s}
+.nav-cta{background:var(--navy);color:#fff;border-radius:8px;padding:10px 24px;font-size:15px;font-weight:700;transition:background .15s}
 .nav-cta:hover{background:var(--navy2)}
 
 /* ── Utility ── */
@@ -62,7 +62,7 @@ nav{
 .hero-kicker{display:inline-flex;align-items:center;gap:8px;background:var(--green-lt);border:1px solid #BBF7D0;border-radius:20px;padding:5px 14px;font-family:var(--serif);font-size:14px;font-style:italic;letter-spacing:.01em;color:var(--green-d);margin-bottom:24px}
 .hero-kicker::before{content:'●';font-size:8px;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-h1.hero-title{font-family:var(--display);font-size:clamp(48px,6vw,80px);font-weight:900;line-height:1.05;color:var(--navy);margin-bottom:28px;letter-spacing:-.01em}
+h1.hero-title{font-family:var(--display);font-size:clamp(40px,4.5vw,62px);font-weight:900;line-height:1.1;color:var(--navy);margin-bottom:28px;letter-spacing:-.01em}
 h1.hero-title em{color:var(--green);font-style:normal}
 .hero-sub{font-size:17px;color:var(--muted);line-height:1.65;max-width:480px;margin-bottom:40px}
 .hero-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
@@ -243,7 +243,7 @@ h1.hero-title em{color:var(--green);font-style:normal}
 .uc-hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
 @media(max-width:860px){.uc-hero-grid{grid-template-columns:1fr}}
 .uc-tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--green-d);background:var(--green-lt);border-radius:4px;padding:4px 10px;margin-bottom:16px}
-.uc-title{font-family:var(--display);font-size:clamp(36px,5vw,60px);font-weight:900;color:var(--navy);line-height:.95;margin-bottom:20px}
+.uc-title{font-family:var(--display);font-size:clamp(36px,5vw,60px);font-weight:900;color:var(--navy);line-height:1.1;margin-bottom:20px}
 .uc-subtitle{font-size:17px;color:var(--muted);line-height:1.65;margin-bottom:32px;max-width:480px}
 .uc-proof-row{display:flex;gap:32px;flex-wrap:wrap;margin-bottom:32px}
 .upr-num{font-family:var(--display);font-size:36px;font-weight:900;color:var(--green);line-height:1}
@@ -479,7 +479,7 @@ footer{background:var(--navy);padding:48px 0}
 
 <nav>
   <div class="nav-brand" onclick="showPage('home')">
-    <svg width="108" height="18"><use href="#evreka-logo-dark"/></svg>
+    <svg width="120" height="20"><use href="#evreka-logo-dark"/></svg>
     <span class="nav-brand-name">Digital Twin</span>
   </div>
   <div class="nav-links">
@@ -569,13 +569,13 @@ footer{background:var(--navy);padding:48px 0}
 <!-- ═══ HOME WHAT-IF SIMULATOR ═══ -->
 <section class="whatif-section" id="whatif-anchor">
   <div class="container">
-    <div class="whatif-header reveal">
+    <div class="whatif-header">
       <div class="eyebrow" style="justify-content:center">Interactive What-If</div>
       <h2>Make a change. See the impact. Decide.</h2>
       <p>This is what a Digital Twin What-If looks like. A real weekly service plan — 7 routes, 7 days. Drag any task to a different day, or click to remove it. Then run the simulation to see whether your change improved or worsened the operation — before it touches reality.</p>
     </div>
 
-    <div class="simulator-shell reveal">
+    <div class="simulator-shell">
       <!-- topbar -->
       <div class="sim-topbar">
         <div class="sim-topbar-left">
@@ -760,8 +760,34 @@ footer{background:var(--navy);padding:48px 0}
   </div>
 </div></div>
 
-<div class="uc-cta"><div class="container"><h2>Ready to test the What-If on your operation?</h2><p>A 20-minute demo shows what the simulation finds on a real operation at your fleet size.</p><div class="uc-cta-actions"><button class="btn-green" onclick="openDemo()">Request a demo →</button><button class="btn-outline" onclick="showPage('home')">Back to overview</button></div></div></div>
-<footer><div class="footer-inner"><div class="footer-brand"><svg width="90" height="16"><use href="#evreka-logo-white"/></svg><span class="footer-brand-name">Digital Twin</span></div><div class="footer-copy">© 2026 Evreka · evreka.co</div></div></footer>
+<section class="demo-section">
+  <div class="container">
+    <div class="demo-inner">
+      <div class="demo-copy">
+        <div class="eyebrow" style="color:rgba(255,255,255,.3)"><span style="background:rgba(255,255,255,.1);width:20px;height:1px;display:inline-block"></span>Request a demo</div>
+        <h2>Run the<br><em>What-If</em><br>on your operation.</h2>
+        <p>Tell us about your fleet. We'll show you what the Digital Twin simulation finds on a real operation at your scale.</p>
+        <div class="demo-bullets">
+          <div class="db-item"><div class="db-dot"></div>20-minute live walkthrough</div>
+          <div class="db-item"><div class="db-dot"></div>No data preparation required</div>
+          <div class="db-item"><div class="db-dot"></div>Simulation output specific to your operation</div>
+          <div class="db-item"><div class="db-dot"></div>Configured for waste, municipal, and logistics operations</div>
+        </div>
+      </div>
+      <div class="demo-form-wrap">
+        <h3>Book a 20-min demo</h3>
+        <p>We'll reach out within 1 business day to schedule.</p>
+        <div class="df-field"><label>First name</label><input type="text" placeholder="Your name"></div>
+        <div class="df-field"><label>Work email</label><input type="email" placeholder="you@company.com"></div>
+        <div class="df-field"><label>Company</label><input type="text" placeholder="Company name"></div>
+        <div class="df-field"><label>Operation type</label><select><option value="">Select your operation type</option><option>Private Waste Management</option><option>Municipality / Public Authority</option><option>Fleet Expansion Operator</option><option>Logistics &amp; Distribution</option><option>Recycling &amp; Treatment Facility</option><option>Other</option></select></div>
+        <button class="df-submit" onclick="submitDemo()">Request demo →</button>
+        <div class="df-note">Or <a href="https://form.jotform.com/252943339505966" target="_blank" style="color:var(--blue);text-decoration:underline">fill out the full form here</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer><div class="footer-inner"><div class="footer-brand"><svg width="90" height="16"><use href="#evreka-logo-white"/></svg><span class="footer-brand-name">Digital Twin</span></div><div class="footer-links"><span class="footer-link" onclick="showPage('waste')">Waste Operators</span><span class="footer-link" onclick="showPage('municipalities')">Municipalities</span><span class="footer-link" onclick="showPage('esg')">ESG</span><span class="footer-link" onclick="showPage('fleet')">Fleet Growth</span><span class="footer-link" onclick="showPage('logistics')">Logistics</span></div><div class="footer-copy">© 2026 Evreka · evreka.co</div></div></footer>
 </div><!-- /page-waste -->
 
 <!-- ═══════════════════════ MUNICIPALITIES ═══════════════════════ -->
@@ -837,8 +863,34 @@ footer{background:var(--navy);padding:48px 0}
   </div>
 </div></div>
 
-<div class="uc-cta"><div class="container"><h2>Present the simulation, not the proposal.</h2><p>A 20-minute demo shows how municipal teams use the Digital Twin to back every schedule decision with data.</p><div class="uc-cta-actions"><button class="btn-green" onclick="openDemo()">Request a demo →</button><button class="btn-outline" onclick="showPage('home')">Back to overview</button></div></div></div>
-<footer><div class="footer-inner"><div class="footer-brand"><svg width="90" height="16"><use href="#evreka-logo-white"/></svg><span class="footer-brand-name">Digital Twin</span></div><div class="footer-copy">© 2026 Evreka · evreka.co</div></div></footer>
+<section class="demo-section">
+  <div class="container">
+    <div class="demo-inner">
+      <div class="demo-copy">
+        <div class="eyebrow" style="color:rgba(255,255,255,.3)"><span style="background:rgba(255,255,255,.1);width:20px;height:1px;display:inline-block"></span>Request a demo</div>
+        <h2>Run the<br><em>What-If</em><br>on your operation.</h2>
+        <p>Tell us about your fleet. We'll show you what the Digital Twin simulation finds on a real operation at your scale.</p>
+        <div class="demo-bullets">
+          <div class="db-item"><div class="db-dot"></div>20-minute live walkthrough</div>
+          <div class="db-item"><div class="db-dot"></div>No data preparation required</div>
+          <div class="db-item"><div class="db-dot"></div>Simulation output specific to your operation</div>
+          <div class="db-item"><div class="db-dot"></div>Configured for waste, municipal, and logistics operations</div>
+        </div>
+      </div>
+      <div class="demo-form-wrap">
+        <h3>Book a 20-min demo</h3>
+        <p>We'll reach out within 1 business day to schedule.</p>
+        <div class="df-field"><label>First name</label><input type="text" placeholder="Your name"></div>
+        <div class="df-field"><label>Work email</label><input type="email" placeholder="you@company.com"></div>
+        <div class="df-field"><label>Company</label><input type="text" placeholder="Company name"></div>
+        <div class="df-field"><label>Operation type</label><select><option value="">Select your operation type</option><option>Private Waste Management</option><option>Municipality / Public Authority</option><option>Fleet Expansion Operator</option><option>Logistics &amp; Distribution</option><option>Recycling &amp; Treatment Facility</option><option>Other</option></select></div>
+        <button class="df-submit" onclick="submitDemo()">Request demo →</button>
+        <div class="df-note">Or <a href="https://form.jotform.com/252943339505966" target="_blank" style="color:var(--blue);text-decoration:underline">fill out the full form here</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer><div class="footer-inner"><div class="footer-brand"><svg width="90" height="16"><use href="#evreka-logo-white"/></svg><span class="footer-brand-name">Digital Twin</span></div><div class="footer-links"><span class="footer-link" onclick="showPage('waste')">Waste Operators</span><span class="footer-link" onclick="showPage('municipalities')">Municipalities</span><span class="footer-link" onclick="showPage('esg')">ESG</span><span class="footer-link" onclick="showPage('fleet')">Fleet Growth</span><span class="footer-link" onclick="showPage('logistics')">Logistics</span></div><div class="footer-copy">© 2026 Evreka · evreka.co</div></div></footer>
 </div><!-- /page-municipalities -->
 
 <!-- ═══════════════════════ ESG ═══════════════════════ -->
@@ -914,8 +966,34 @@ footer{background:var(--navy);padding:48px 0}
   </div>
 </div></div>
 
-<div class="uc-cta"><div class="container"><h2>Prove the impact before you report it.</h2><p>The Digital Twin generates simulation-backed ESG data tied to specific operational decisions.</p><div class="uc-cta-actions"><button class="btn-green" onclick="openDemo()">Request a demo →</button><button class="btn-outline" onclick="showPage('home')">Back to overview</button></div></div></div>
-<footer><div class="footer-inner"><div class="footer-brand"><svg width="90" height="16"><use href="#evreka-logo-white"/></svg><span class="footer-brand-name">Digital Twin</span></div><div class="footer-copy">© 2026 Evreka · evreka.co</div></div></footer>
+<section class="demo-section">
+  <div class="container">
+    <div class="demo-inner">
+      <div class="demo-copy">
+        <div class="eyebrow" style="color:rgba(255,255,255,.3)"><span style="background:rgba(255,255,255,.1);width:20px;height:1px;display:inline-block"></span>Request a demo</div>
+        <h2>Run the<br><em>What-If</em><br>on your operation.</h2>
+        <p>Tell us about your fleet. We'll show you what the Digital Twin simulation finds on a real operation at your scale.</p>
+        <div class="demo-bullets">
+          <div class="db-item"><div class="db-dot"></div>20-minute live walkthrough</div>
+          <div class="db-item"><div class="db-dot"></div>No data preparation required</div>
+          <div class="db-item"><div class="db-dot"></div>Simulation output specific to your operation</div>
+          <div class="db-item"><div class="db-dot"></div>Configured for waste, municipal, and logistics operations</div>
+        </div>
+      </div>
+      <div class="demo-form-wrap">
+        <h3>Book a 20-min demo</h3>
+        <p>We'll reach out within 1 business day to schedule.</p>
+        <div class="df-field"><label>First name</label><input type="text" placeholder="Your name"></div>
+        <div class="df-field"><label>Work email</label><input type="email" placeholder="you@company.com"></div>
+        <div class="df-field"><label>Company</label><input type="text" placeholder="Company name"></div>
+        <div class="df-field"><label>Operation type</label><select><option value="">Select your operation type</option><option>Private Waste Management</option><option>Municipality / Public Authority</option><option>Fleet Expansion Operator</option><option>Logistics &amp; Distribution</option><option>Recycling &amp; Treatment Facility</option><option>Other</option></select></div>
+        <button class="df-submit" onclick="submitDemo()">Request demo →</button>
+        <div class="df-note">Or <a href="https://form.jotform.com/252943339505966" target="_blank" style="color:var(--blue);text-decoration:underline">fill out the full form here</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer><div class="footer-inner"><div class="footer-brand"><svg width="90" height="16"><use href="#evreka-logo-white"/></svg><span class="footer-brand-name">Digital Twin</span></div><div class="footer-links"><span class="footer-link" onclick="showPage('waste')">Waste Operators</span><span class="footer-link" onclick="showPage('municipalities')">Municipalities</span><span class="footer-link" onclick="showPage('esg')">ESG</span><span class="footer-link" onclick="showPage('fleet')">Fleet Growth</span><span class="footer-link" onclick="showPage('logistics')">Logistics</span></div><div class="footer-copy">© 2026 Evreka · evreka.co</div></div></footer>
 </div><!-- /page-esg -->
 
 <!-- ═══════════════════════ FLEET GROWTH ═══════════════════════ -->
@@ -992,8 +1070,34 @@ footer{background:var(--navy);padding:48px 0}
   </div>
 </div></div>
 
-<div class="uc-cta"><div class="container"><h2>Strategic growth without the guesswork.</h2><p>A 20-minute demo shows how the Digital Twin models fleet decisions on your actual operational data.</p><div class="uc-cta-actions"><button class="btn-green" onclick="openDemo()">Request a demo →</button><button class="btn-outline" onclick="showPage('home')">Back to overview</button></div></div></div>
-<footer><div class="footer-inner"><div class="footer-brand"><svg width="90" height="16"><use href="#evreka-logo-white"/></svg><span class="footer-brand-name">Digital Twin</span></div><div class="footer-copy">© 2026 Evreka · evreka.co</div></div></footer>
+<section class="demo-section">
+  <div class="container">
+    <div class="demo-inner">
+      <div class="demo-copy">
+        <div class="eyebrow" style="color:rgba(255,255,255,.3)"><span style="background:rgba(255,255,255,.1);width:20px;height:1px;display:inline-block"></span>Request a demo</div>
+        <h2>Run the<br><em>What-If</em><br>on your operation.</h2>
+        <p>Tell us about your fleet. We'll show you what the Digital Twin simulation finds on a real operation at your scale.</p>
+        <div class="demo-bullets">
+          <div class="db-item"><div class="db-dot"></div>20-minute live walkthrough</div>
+          <div class="db-item"><div class="db-dot"></div>No data preparation required</div>
+          <div class="db-item"><div class="db-dot"></div>Simulation output specific to your operation</div>
+          <div class="db-item"><div class="db-dot"></div>Configured for waste, municipal, and logistics operations</div>
+        </div>
+      </div>
+      <div class="demo-form-wrap">
+        <h3>Book a 20-min demo</h3>
+        <p>We'll reach out within 1 business day to schedule.</p>
+        <div class="df-field"><label>First name</label><input type="text" placeholder="Your name"></div>
+        <div class="df-field"><label>Work email</label><input type="email" placeholder="you@company.com"></div>
+        <div class="df-field"><label>Company</label><input type="text" placeholder="Company name"></div>
+        <div class="df-field"><label>Operation type</label><select><option value="">Select your operation type</option><option>Private Waste Management</option><option>Municipality / Public Authority</option><option>Fleet Expansion Operator</option><option>Logistics &amp; Distribution</option><option>Recycling &amp; Treatment Facility</option><option>Other</option></select></div>
+        <button class="df-submit" onclick="submitDemo()">Request demo →</button>
+        <div class="df-note">Or <a href="https://form.jotform.com/252943339505966" target="_blank" style="color:var(--blue);text-decoration:underline">fill out the full form here</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer><div class="footer-inner"><div class="footer-brand"><svg width="90" height="16"><use href="#evreka-logo-white"/></svg><span class="footer-brand-name">Digital Twin</span></div><div class="footer-links"><span class="footer-link" onclick="showPage('waste')">Waste Operators</span><span class="footer-link" onclick="showPage('municipalities')">Municipalities</span><span class="footer-link" onclick="showPage('esg')">ESG</span><span class="footer-link" onclick="showPage('fleet')">Fleet Growth</span><span class="footer-link" onclick="showPage('logistics')">Logistics</span></div><div class="footer-copy">© 2026 Evreka · evreka.co</div></div></footer>
 </div><!-- /page-fleet -->
 
 <!-- ═══════════════════════ LOGISTICS ═══════════════════════ -->
@@ -1086,8 +1190,34 @@ footer{background:var(--navy);padding:48px 0}
   </div>
 </div></div>
 
-<div class="uc-cta"><div class="container"><h2>Stop leaving money on the return trip.</h2><p>A 20-minute demo shows how the Digital Twin finds consolidation and optimisation opportunities on your actual dispatch data.</p><div class="uc-cta-actions"><button class="btn-green" onclick="openDemo()">Request a demo →</button><button class="btn-outline" onclick="showPage('home')">Back to overview</button></div></div></div>
-<footer><div class="footer-inner"><div class="footer-brand"><svg width="90" height="16"><use href="#evreka-logo-white"/></svg><span class="footer-brand-name">Digital Twin</span></div><div class="footer-copy">© 2026 Evreka · evreka.co</div></div></footer>
+<section class="demo-section">
+  <div class="container">
+    <div class="demo-inner">
+      <div class="demo-copy">
+        <div class="eyebrow" style="color:rgba(255,255,255,.3)"><span style="background:rgba(255,255,255,.1);width:20px;height:1px;display:inline-block"></span>Request a demo</div>
+        <h2>Run the<br><em>What-If</em><br>on your operation.</h2>
+        <p>Tell us about your fleet. We'll show you what the Digital Twin simulation finds on a real operation at your scale.</p>
+        <div class="demo-bullets">
+          <div class="db-item"><div class="db-dot"></div>20-minute live walkthrough</div>
+          <div class="db-item"><div class="db-dot"></div>No data preparation required</div>
+          <div class="db-item"><div class="db-dot"></div>Simulation output specific to your operation</div>
+          <div class="db-item"><div class="db-dot"></div>Configured for waste, municipal, and logistics operations</div>
+        </div>
+      </div>
+      <div class="demo-form-wrap">
+        <h3>Book a 20-min demo</h3>
+        <p>We'll reach out within 1 business day to schedule.</p>
+        <div class="df-field"><label>First name</label><input type="text" placeholder="Your name"></div>
+        <div class="df-field"><label>Work email</label><input type="email" placeholder="you@company.com"></div>
+        <div class="df-field"><label>Company</label><input type="text" placeholder="Company name"></div>
+        <div class="df-field"><label>Operation type</label><select><option value="">Select your operation type</option><option>Private Waste Management</option><option>Municipality / Public Authority</option><option>Fleet Expansion Operator</option><option>Logistics &amp; Distribution</option><option>Recycling &amp; Treatment Facility</option><option>Other</option></select></div>
+        <button class="df-submit" onclick="submitDemo()">Request demo →</button>
+        <div class="df-note">Or <a href="https://form.jotform.com/252943339505966" target="_blank" style="color:var(--blue);text-decoration:underline">fill out the full form here</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer><div class="footer-inner"><div class="footer-brand"><svg width="90" height="16"><use href="#evreka-logo-white"/></svg><span class="footer-brand-name">Digital Twin</span></div><div class="footer-links"><span class="footer-link" onclick="showPage('waste')">Waste Operators</span><span class="footer-link" onclick="showPage('municipalities')">Municipalities</span><span class="footer-link" onclick="showPage('esg')">ESG</span><span class="footer-link" onclick="showPage('fleet')">Fleet Growth</span><span class="footer-link" onclick="showPage('logistics')">Logistics</span></div><div class="footer-copy">© 2026 Evreka · evreka.co</div></div></footer>
 </div><!-- /page-logistics -->
 
 <script>
@@ -1929,12 +2059,11 @@ function runLogTool(){
 }
 
 // ── Scroll reveal ─────────────────────────────────────────────────────────
+const revealObs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revealObs.unobserve(e.target)}}),{threshold:.1});
 function initReveal(){
-  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.1});
-  document.querySelectorAll('.page.active .reveal').forEach(el=>{el.classList.remove('visible');obs.observe(el);});
+  document.querySelectorAll('.page.active .reveal:not(.visible)').forEach(el=>revealObs.observe(el));
 }
 initReveal();
-window.addEventListener('scroll',initReveal,{passive:true});
 
 // Drag-over cleanup
 document.addEventListener('dragover',e=>{document.querySelectorAll('.tasks-area').forEach(a=>a.classList.remove('drag-over'))});
