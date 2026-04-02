@@ -140,7 +140,9 @@ h1.hero-title em{color:var(--green);font-style:normal}
 .whatif-header h2{font-family:var(--display);font-size:clamp(32px,4vw,48px);font-weight:900;color:var(--navy);margin-bottom:12px;line-height:1}
 .whatif-header p{font-size:16px;color:var(--muted);line-height:1.65}
 
-.simulator-shell{background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;max-width:980px;margin:0 auto}
+.simulator-shell{background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;max-width:980px;margin:0 auto;position:relative}
+.sim-try-badge{position:absolute;top:-14px;right:24px;z-index:10;display:inline-flex;align-items:center;gap:6px;background:var(--green);color:#fff;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.04em;padding:6px 14px;border-radius:20px;box-shadow:0 4px 16px rgba(22,163,74,.3);animation:simBadgePulse 2.5s ease-in-out infinite}
+@keyframes simBadgePulse{0%,100%{box-shadow:0 4px 16px rgba(22,163,74,.3)}50%{box-shadow:0 4px 24px rgba(22,163,74,.55)}}
 
 /* top bar */
 .sim-topbar{background:var(--navy);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
@@ -348,7 +350,7 @@ footer{background:var(--navy);padding:48px 0}
 .hwc-day-name{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .hwc-day-km{font-family:var(--display);font-size:14px;font-weight:700;color:var(--navy);line-height:1;margin-top:2px}
 .hwc-day-delta{font-family:var(--mono);font-size:9px;margin-top:1px;min-height:11px}
-.hwc-tasks{padding:6px;min-height:110px}
+.hwc-tasks{padding:6px;min-height:110px;max-height:140px;overflow:hidden}
 .hwc-tasks.drag-over{background:rgba(22,163,74,.05)}
 
 .hwc-chip{
@@ -500,7 +502,7 @@ footer{background:var(--navy);padding:48px 0}
   <div class="container">
     <div class="hero-grid">
       <div>
-        <div class="hero-kicker">What-If Decision Engine</div>
+        <div class="hero-kicker">AI Simulation Engine</div>
         <h1 class="hero-title">Stop guessing.<br>Start <em>simulating.</em></h1>
         <p class="hero-sub">Evreka Digital Twin is a What-If decision engine for complex operations. Test any scenario — route restructuring, fleet sizing, contract pricing, shift timing, new service zones, ESG targets — and see the measurable impact before committing. Whether you're pricing a tender bid, planning a fleet investment, or deciding how to restructure next week's schedule, the simulation runs first.</p>
         <div class="hero-actions">
@@ -576,6 +578,7 @@ footer{background:var(--navy);padding:48px 0}
     </div>
 
     <div class="simulator-shell">
+      <div class="sim-try-badge">☝️ Interactive — try it yourself</div>
       <!-- topbar -->
       <div class="sim-topbar">
         <div class="sim-topbar-left">
@@ -584,7 +587,7 @@ footer{background:var(--navy);padding:48px 0}
         </div>
         <div class="sim-topbar-right">
           <button class="sim-tab active" id="tab-editor">Editor</button>
-          <button class="sim-tab inactive" id="tab-impact" style="display:none">Impact Report</button>
+          <button class="sim-tab inactive" id="tab-impact" style="display:none" onclick="openDemo()">Impact Report</button>
         </div>
       </div>
 
